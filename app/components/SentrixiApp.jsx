@@ -121,6 +121,20 @@ function VideoPlayer({ src, poster, title, description, duration, accentColor = 
   );
 }
 
+/* ── Dashboard Image — displays dashboard PNGs with caption ── */
+function DashboardImage({ src, title, description, accentColor = "#6366f1" }) {
+  const [ref, vis] = useReveal(0.15);
+  return (
+    <div ref={ref} style={{ marginBottom: 48, borderRadius: 16, overflow: "hidden", border: `1px solid ${accentColor}33`, background: "rgba(15,23,42,0.5)", position: "relative", opacity: vis ? 1 : 0, transform: vis ? "translateY(0)" : "translateY(24px)", transition: "all 0.6s ease-out" }}>
+      <img src={src} alt={title} style={{ width: "100%", display: "block", borderBottom: `1px solid ${accentColor}20` }} />
+      <div style={{ padding: "20px 24px", background: "linear-gradient(180deg, rgba(15,23,42,0.8), rgba(10,14,26,0.9))" }}>
+        <div style={{ fontFamily: "Syne", fontSize: 16, fontWeight: 700, color: "#e2e8f0", marginBottom: 6 }}>{title}</div>
+        <div style={{ fontFamily: "DM Sans", fontSize: 13, color: "#94a3b8", lineHeight: 1.5 }}>{description}</div>
+      </div>
+    </div>
+  );
+}
+
 /* ── attack chain infographic ── */
 function AttackChain({ steps, detectAt, color, title }) {
   const [ref, vis] = useReveal(0.2);
@@ -451,13 +465,28 @@ export default function SentrixiLanding() {
           </div>
 
           <VideoPlayer
-            src="/videos/AEGIS_SHIELD.mp4"
+            src="/videos/shield-overview.mp4"
             poster="/videos/AEGIS_SHIELD_poster.jpg"
             title="Your Database Has a Blind Spot"
             description="See how AEGIS Shield detects query anomalies, data exfiltration, and credential misuse in real-time"
             duration="1:00 — Database Protection Overview"
             accentColor="#6366f1"
           />
+
+          <div className="g2" style={{ marginBottom: 48 }}>
+            <DashboardImage
+              src="/dashboards/AEGIS_02_Kill_Chain_Process_Compromise.png"
+              title="Real-Time Kill Chain Mapping"
+              description="Shield identifies the exact moment a legitimate process is compromised and begins unauthorized database reconnaissance."
+              accentColor="#6366f1"
+            />
+            <DashboardImage
+              src="/dashboards/AEGIS_03_Guardian_Response_Console.png"
+              title="Guardian Response Console"
+              description="Automated intervention and containment actions being executed as a threat is detected at the query layer."
+              accentColor="#6366f1"
+            />
+          </div>
 
           <div className="g3" style={{ marginBottom: 48 }}>
             {[
@@ -516,13 +545,34 @@ export default function SentrixiLanding() {
           </div>
 
           <VideoPlayer
-            src="/videos/AEGIS_SENTINEL.mp4"
+            src="/videos/sentinel-overview.mp4"
             poster="/videos/AEGIS_SENTINEL_poster.jpg"
             title="The SIEM That Lives Where Your Data Lives"
             description="See how 30+ AI agents correlate across identity, endpoint, email, cloud, network, and database telemetry"
             duration="1:00 — AI SIEM on Any Datalake"
             accentColor="#8b5cf6"
           />
+
+          <div className="g3" style={{ marginBottom: 48 }}>
+            <DashboardImage
+              src="/dashboards/AEGIS_01_SOC_Executive_Dashboard.png"
+              title="SOC Executive Dashboard"
+              description="High-level visibility into enterprise risk, agent efficiency, and active incident lifecycles across all telemetry sources."
+              accentColor="#8b5cf6"
+            />
+            <DashboardImage
+              src="/dashboards/AEGIS_04_Agent_Fleet_30_Agents.png"
+              title="AI Agent Fleet Management"
+              description="Orchestrating 30+ specialized security agents, each monitoring specific domain telemetry in parallel."
+              accentColor="#8b5cf6"
+            />
+            <DashboardImage
+              src="/dashboards/AEGIS_05_Forensic_Report.png"
+              title="Automated Forensic Reporting"
+              description="Complete forensic timelines and evidence packages generated autonomously by the investigation agent team."
+              accentColor="#8b5cf6"
+            />
+          </div>
 
           <div className="g2" style={{ marginBottom: 48 }}>
             <div className="card" style={{ padding: 16, minHeight: 380 }}><CorrelationDiagram /></div>
@@ -601,7 +651,14 @@ export default function SentrixiLanding() {
             <div style={{ fontFamily: "Syne", fontSize: 22, fontWeight: 700, color: "#e2e8f0", marginBottom: 6 }}>Real-World Threat Scenarios</div>
             <div style={{ fontFamily: "DM Sans", fontSize: 14, color: "#64748b", marginBottom: 24 }}>Click to see multi-source correlation details and MITRE ATT&CK mapping.</div>
           </div>
-          <div className="g2">{sentinelCases.map((uc, i) => <UseCase key={i} {...uc} delay={i * 0.05} />)}</div>
+          <div className="g2" style={{ marginBottom: 48 }}>{sentinelCases.map((uc, i) => <UseCase key={i} {...uc} delay={i * 0.05} />)}</div>
+
+          <DashboardImage
+            src="/dashboards/AEGIS_06_LOTL_Attack_Simulation.png"
+            title="Living-off-the-Land (LotL) Attack Simulation"
+            description="Sentinel detecting a sophisticated zero-day exploit attempt that exclusively uses legitimate system binaries (PowerShell, WMI) to evade traditional EDR signatures."
+            accentColor="#8b5cf6"
+          />
         </div>
       </section>
 
