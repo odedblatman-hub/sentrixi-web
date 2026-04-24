@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 const NOTIFY_EMAIL = process.env.CONTACT_NOTIFY_EMAIL ?? "odedblatman@gmail.com";
+const SLACK_WEBHOOK = process.env.SLACK_WEBHOOK_URL ?? "";
 const FROM_EMAIL = "register@sentrixi.com";
 const FROM_NAME = "Sentrixi AEGIS";
 
@@ -61,6 +62,26 @@ export async function POST(req: NextRequest) {
       const err = await res.text();
       console.error("Brevo send failed:", err);
     }
+  }
+
+  if (SLACK_WEBHOOK) {
+    const icon = { briefing: "📋", sandbox: "🧪", partner: "🤝" }[type ?? ""] ?? "📬";
+    await fetch(SLACK_WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: `${icon} *New ${label}* on sentrixi.com`,
+        blocks: [
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `${icon} *${label}*\n*Name:* ${name}\n*Email:* <mailto:${email}|${email}>\n*Company:* ${company ?? "—"}`,
+            },
+          },
+        ],
+      }),
+    }).catch((e) => console.error("Slack notify failed:", e));
   }
 
   return NextResponse.json({ ok: true });
