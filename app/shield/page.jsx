@@ -38,6 +38,23 @@ export default function ShieldPage() {
         </div>
       </section>
 
+      {/* PLATFORM WALKTHROUGH */}
+      <section style={{ position: "relative", zIndex: 1, padding: "5rem 2rem" }}>
+        <div style={{ maxWidth: "900px", margin: "0 auto", textAlign: "center" }}>
+          <SectionLabel>PLATFORM WALKTHROUGH</SectionLabel>
+          <h2 style={{ fontFamily: "var(--font-serif-display, 'DM Serif Display', serif)", fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", fontWeight: 400, marginBottom: "0.75rem", lineHeight: 1.2 }}>See Shield in action.</h2>
+          <p style={{ color: "#7a92aa", fontSize: "0.9rem", marginBottom: "2rem" }}>4-minute walkthrough · No login required</p>
+          <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(0,210,255,0.15)", background: "#000", boxShadow: "0 0 60px rgba(0,210,255,0.06)" }}>
+            <video
+              src="/videos/AEGIS_SHIELD.mp4"
+              controls
+              playsInline
+              style={{ width: "100%", display: "block" }}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* THE PROBLEM */}
       <section id="why" style={{ position: "relative", zIndex: 1, padding: "7rem 2rem", background: "rgba(0,10,20,0.7)", borderTop: "1px solid rgba(0,210,255,0.06)" }}>
         <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
