@@ -174,7 +174,6 @@ export default function InvestorsPage() {
       </section>
 
       <Footer />
-      <style>{`* { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
     </main>
   );
 }

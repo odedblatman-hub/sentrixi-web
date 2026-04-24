@@ -66,7 +66,6 @@ export default function Home() {
         <a href="mailto:register@sentrixi.com" style={{ color: "#3a4f62", textDecoration: "none" }}>register@sentrixi.com</a>
       </footer>
 
-      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } } * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
     </main>
   );
 }

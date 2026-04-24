@@ -196,7 +196,6 @@ export default function SentinelPage() {
       </section>
 
       <Footer />
-      <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } } * { box-sizing: border-box; margin: 0; padding: 0; }`}</style>
     </main>
   );
 }
