@@ -5,18 +5,6 @@ import Link from "next/link";
 const ACCENT = "#f59e0b";
 const CYAN = "#00d4ff";
 
-export const metadata = {
-  title: "AEGIS Sentinel — Full AI SIEM on Any Datalake | Sentrixi",
-  description: "30+ AI agents. Any datalake. Sub-second correlation. Built for database vendors and enterprise SOC teams.",
-  openGraph: {
-    title: "AEGIS Sentinel — Sentrixi",
-    description: "The AI SIEM that connects to everything you already run.",
-    url: "https://sentrixi.com/sentinel",
-    siteName: "Sentrixi",
-    images: [{ url: "https://sentrixi.com/og-sentinel.png", width: 1200, height: 630 }],
-  },
-};
-
 export default function SentinelPage() {
   const [activeAudience, setActiveAudience] = useState("vendor");
 

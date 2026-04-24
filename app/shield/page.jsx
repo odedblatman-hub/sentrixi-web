@@ -5,18 +5,6 @@ import Link from "next/link";
 const ACCENT = "#00d4ff";
 const THREAT_RED = "#ff4444";
 
-export const metadata = {
-  title: "AEGIS Shield — AI-Native Database Security | Sentrixi",
-  description: "Real-time behavioral detection inside your database engine. Built for CISOs and CTOs in regulated environments.",
-  openGraph: {
-    title: "AEGIS Shield — Sentrixi",
-    description: "Detect threats at the query layer. Zero ETL. Sub-second latency.",
-    url: "https://sentrixi.com/shield",
-    siteName: "Sentrixi",
-    images: [{ url: "https://sentrixi.com/og-shield.png", width: 1200, height: 630 }],
-  },
-};
-
 export default function ShieldPage() {
   return (
     <main style={{ background: "#04080f", color: "#e8edf5", minHeight: "100vh", fontFamily: "var(--font-sans, 'IBM Plex Sans', system-ui, sans-serif)" }}>
