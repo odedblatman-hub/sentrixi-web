@@ -465,7 +465,7 @@ export default function SentrixiLanding() {
           </div>
 
           <VideoPlayer
-            src="/videos/shield-overview.mp4"
+            src="/videos/AEGIS_SHIELD.mp4"
             poster="/videos/AEGIS_SHIELD_poster.jpg"
             title="Your Database Has a Blind Spot"
             description="See how AEGIS Shield detects query anomalies, data exfiltration, and credential misuse in real-time"
@@ -545,7 +545,7 @@ export default function SentrixiLanding() {
           </div>
 
           <VideoPlayer
-            src="/videos/sentinel-overview.mp4"
+            src="/videos/AEGIS_SENTINEL.mp4"
             poster="/videos/AEGIS_SENTINEL_poster.jpg"
             title="The SIEM That Lives Where Your Data Lives"
             description="See how 30+ AI agents correlate across identity, endpoint, email, cloud, network, and database telemetry"
