@@ -1,8 +1,23 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { DM_Serif_Display, IBM_Plex_Sans } from "next/font/google";
+
+const dmSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-serif-display",
+  display: "swap",
+});
+
+const ibmPlex = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
-  title: "Sentrixi — AEGIS: AI-Native Security for Real-Time Databases",
+  title: "Sentrixi — AI-Native Security for Real-Time Databases",
   description:
     "AEGIS delivers AI-powered database protection and full SIEM capabilities running natively on HTAP databases. Zero ETL. Real-time detection. Sub-second response.",
   keywords: ["database security", "AI SIEM", "insider threat detection", "HTAP security", "behavioral analytics", "DFIR", "NYDFS compliance"],
@@ -11,12 +26,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://sentrixi.com",
     siteName: "Sentrixi",
-    title: "Sentrixi — AEGIS: AI-Native Security for Real-Time Databases",
+    title: "Sentrixi — AI-Native Security for Real-Time Databases",
     description: "Security that lives where your data lives.",
+    images: [{ url: "https://sentrixi.com/og-image.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sentrixi — AEGIS: AI-Native Database Security",
+    title: "Sentrixi — AI-Native Database Security",
     description: "Security that lives where your data lives.",
   },
   robots: { index: true, follow: true },
@@ -27,17 +43,8 @@ const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID ?? "";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap"
-          rel="stylesheet"
-        />
-        <meta name="theme-color" content="#0a0e1a" />
-      </head>
-      <body style={{ margin: 0, padding: 0, background: "#0a0e1a" }}>
+    <html lang="en" className={`${dmSerif.variable} ${ibmPlex.variable}`}>
+      <body style={{ margin: 0, padding: 0, background: "#04080f" }}>
         {children}
         {GA4_ID && (
           <>
