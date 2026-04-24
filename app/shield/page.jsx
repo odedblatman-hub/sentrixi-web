@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import WhyNow from "@/components/WhyNow";
 
 const ACCENT = "#00d4ff";
 const THREAT_RED = "#ff4444";
@@ -46,14 +47,18 @@ export default function ShieldPage() {
           <p style={{ color: "#7a92aa", fontSize: "0.9rem", marginBottom: "2rem" }}>4-minute walkthrough · No login required</p>
           <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(0,210,255,0.15)", background: "#000", boxShadow: "0 0 60px rgba(0,210,255,0.06)" }}>
             <video
-              src="/videos/AEGIS_SHIELD.mp4"
+              src="/videos/shield-overview.mp4"
               controls
               playsInline
-              style={{ width: "100%", display: "block" }}
-            />
+              style={{ width: "100%", display: "block", aspectRatio: "16/9", objectFit: "cover" }}
+            >
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </section>
+
+      <WhyNow context="ciso" />
 
       {/* THE PROBLEM */}
       <section id="why" style={{ position: "relative", zIndex: 1, padding: "7rem 2rem", background: "rgba(0,10,20,0.7)", borderTop: "1px solid rgba(0,210,255,0.06)" }}>

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import WhyNow from "@/components/WhyNow";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
@@ -15,6 +16,7 @@ export default function Home() {
         <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
           <Link href="/shield" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SHIELD</Link>
           <Link href="/sentinel" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SENTINEL</Link>
+          <Link href="/investors" style={{ color: "#a78bfa", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>INVESTORS</Link>
           <a href="mailto:register@sentrixi.com" style={{ padding: "0.4rem 1.2rem", border: "1px solid rgba(0,210,255,0.4)", borderRadius: "4px", color: "#00d4ff", textDecoration: "none", fontSize: "0.78rem", letterSpacing: "0.08em" }}>CONTACT</a>
         </div>
       </nav>
@@ -55,6 +57,8 @@ export default function Home() {
           <Stat value="70%" label="Cost reduction vs. legacy SIEM" />
         </div>
       </section>
+
+      <WhyNow context="market" />
 
       <footer style={{ position: "relative", zIndex: 1, padding: "2rem 3rem", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: "0.78rem", color: "#3a4f62" }}>
         <span style={{ fontFamily: "var(--font-serif-display, 'DM Serif Display', serif)", fontSize: "1rem", color: "#4a6070" }}>SENTRIXI</span>

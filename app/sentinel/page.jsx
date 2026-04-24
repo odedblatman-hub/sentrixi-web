@@ -58,11 +58,13 @@ export default function SentinelPage() {
           <p style={{ color: "#7a92aa", fontSize: "0.9rem", marginBottom: "2rem" }}>Full platform walkthrough · No login required</p>
           <div style={{ borderRadius: "12px", overflow: "hidden", border: "1px solid rgba(245,158,11,0.15)", background: "#000", boxShadow: "0 0 60px rgba(245,158,11,0.04)" }}>
             <video
-              src="/videos/AEGIS_SENTINEL.mp4"
+              src="/videos/sentinel-overview.mp4"
               controls
               playsInline
-              style={{ width: "100%", display: "block" }}
-            />
+              style={{ width: "100%", display: "block", aspectRatio: "16/9", objectFit: "cover" }}
+            >
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </section>
