@@ -50,6 +50,7 @@ export default function ShieldPage() {
               src="/videos/shield-overview.mp4"
               controls
               playsInline
+              preload="metadata"
               style={{ width: "100%", display: "block", aspectRatio: "16/9", objectFit: "cover" }}
             >
               Your browser does not support the video tag.

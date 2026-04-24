@@ -72,32 +72,48 @@ function Particles() {
 }
 
 /* ── Video player — shows real video when src is provided, else styled placeholder ── */
-function VideoPlayer({ src, poster, title, description, duration, accentColor = "#6366f1" }) {
+function VideoPlayer({ src, title, description, duration, accentColor = "#6366f1" }) {
   const [playing, setPlaying] = useState(false);
+  const [error, setError] = useState(false);
   const videoRef = useRef(null);
 
   function handlePlay() {
     if (src && videoRef.current) {
-      videoRef.current.play();
+      videoRef.current.play().catch(e => {
+        console.error("Video play failed:", e);
+        setError(true);
+      });
       setPlaying(true);
     }
     trackEvent("video_play", { video_title: title });
   }
 
-  if (src) {
+  if (src && !error) {
     return (
       <div style={{ marginBottom: 48, borderRadius: 16, overflow: "hidden", border: `1px solid ${accentColor}33`, background: "#0a0e1a", position: "relative" }}>
         <video
           ref={videoRef}
           src={src}
-          poster={poster}
           controls
           playsInline
           preload="metadata"
-          style={{ width: "100%", display: "block", aspectRatio: "16/9" }}
-          onPlay={() => trackEvent("video_play", { video_title: title })}
+          style={{ width: "100%", display: "block", aspectRatio: "16/9", objectFit: "cover" }}
+          onPlay={() => { setPlaying(true); trackEvent("video_play", { video_title: title }); }}
           onEnded={() => trackEvent("video_complete", { video_title: title })}
-        />
+          onError={(e) => { console.error("Video error:", e); setError(true); }}
+        >
+          Your browser does not support the video tag.
+        </video>
+        {!playing && (
+           <div 
+             onClick={handlePlay}
+             style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.3)", cursor: "pointer", zIndex: 10 }}
+           >
+             <div style={{ width: 64, height: 64, borderRadius: "50%", background: accentColor, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: `0 0 30px ${accentColor}66` }}>
+               <I.Play />
+             </div>
+           </div>
+        )}
       </div>
     );
   }
@@ -115,7 +131,7 @@ function VideoPlayer({ src, poster, title, description, duration, accentColor = 
         <div style={{ marginTop: 20, fontFamily: "Syne", fontSize: 16, fontWeight: 700, color: "#c7d2fe", position: "relative", zIndex: 1 }}>{title}</div>
         <div style={{ fontFamily: "DM Sans", fontSize: 13, color: "#64748b", marginTop: 6, position: "relative", zIndex: 1, textAlign: "center", maxWidth: 480, padding: "0 24px" }}>{description}</div>
         {duration && <div style={{ marginTop: 12, padding: "4px 12px", borderRadius: 100, background: `${accentColor}1a`, fontFamily: "DM Sans", fontSize: 11, color: accentColor, fontWeight: 600, position: "relative", zIndex: 1 }}>{duration}</div>}
-        <div style={{ marginTop: 8, padding: "3px 10px", borderRadius: 100, background: "rgba(255,255,255,0.04)", fontFamily: "DM Sans", fontSize: 10, color: "#475569", position: "relative", zIndex: 1 }}>Video coming soon</div>
+        <div style={{ marginTop: 8, padding: "3px 10px", borderRadius: 100, background: "rgba(255,255,255,0.04)", fontFamily: "DM Sans", fontSize: 10, color: "#475569", position: "relative", zIndex: 1 }}>{error ? "Error loading video" : "Video coming soon"}</div>
       </div>
     </div>
   );
@@ -406,23 +422,26 @@ export default function SentrixiLanding() {
         @media(max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}.sec{padding:60px 16px}}
       `}</style>
 
-      {/* NAV */}
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(10,14,26,0.88)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(99,102,241,0.1)" }}>
-        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, background: "rgba(10,14,26,0.8)", backdropFilter: "blur(20px)", borderBottom: "1px solid rgba(99,102,241,0.1)" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 24px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 72 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }} onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
             <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg,#6366f1,#8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center" }}><I.Shield s={18} /></div>
-            <span style={{ fontFamily: "Syne", fontWeight: 800, fontSize: 20, color: "#e2e8f0", letterSpacing: -0.5 }}>SENTRIXI</span>
+            <span style={{ fontFamily: "Syne", fontWeight: 800, fontSize: 22, color: "#e2e8f0", letterSpacing: -0.5 }}>SENTRIXI</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
-            <a style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontWeight: 500 }} href="#shield">Shield</a>
-            <a style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontWeight: 500 }} href="#sentinel">Sentinel</a>
-            <a style={{ color: "#fca5a5", textDecoration: "none", fontSize: 14, fontWeight: 500 }} href="#why-aegis">Why AEGIS</a>
-            <a style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontWeight: 500 }} href="#htap">Why HTAP</a>
-            <a style={{ color: "#94a3b8", textDecoration: "none", fontSize: 14, fontWeight: 500 }} href="#pricing">Pricing</a>
-            <button className="cta-btn cta-primary" style={{ padding: "8px 20px", fontSize: 13 }} onClick={() => setModal("briefing")}>Request Demo</button>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+            <a className="nav-link" href="#shield">Shield</a>
+            <a className="nav-link" href="#sentinel">Sentinel</a>
+            <a className="nav-link" href="#why-aegis">Why AEGIS</a>
+            <a className="nav-link" href="#pricing">Pricing</a>
+            <button className="cta-btn cta-primary" style={{ padding: "10px 24px", fontSize: 13 }} onClick={() => setModal("briefing")}>Get Started</button>
           </div>
         </div>
       </nav>
+
+      <style>{`
+        .nav-link { color: #94a3b8; text-decoration: none; font-size: 14, font-weight: 600; transition: color 0.3s; font-family: 'Syne', sans-serif; }
+        .nav-link:hover { color: #a5b4fc; }
+      `}</style>
 
       {/* HERO */}
       <section style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
@@ -462,11 +481,14 @@ export default function SentrixiLanding() {
             <h2 style={{ fontFamily: "Syne", fontSize: 40, fontWeight: 700, color: "#e2e8f0", marginBottom: 8 }}>AEGIS Shield</h2>
             <p style={{ fontFamily: "Syne", fontSize: 20, color: "#a5b4fc", marginBottom: 8 }}>AI-Native Database Protection</p>
             <p style={{ color: "#94a3b8", maxWidth: 640, margin: "0 auto", fontFamily: "DM Sans", lineHeight: 1.6 }}>Shield runs inside your HTAP database — not beside it. It learns every user's behavioral baseline and detects threats that legacy DAM tools structurally cannot see.</p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 32, marginBottom: 48 }}>
+              <button className="cta-btn cta-primary" onClick={() => setModal("briefing")}>Request Technical Briefing</button>
+              <button className="cta-btn cta-secondary" onClick={() => setModal("sandbox")}>Request Sandbox Access</button>
+            </div>
           </div>
 
           <VideoPlayer
-            src="/videos/AEGIS_SHIELD.mp4"
-            poster="/videos/AEGIS_SHIELD_poster.jpg"
+            src="/videos/shield-overview.mp4"
             title="Your Database Has a Blind Spot"
             description="See how AEGIS Shield detects query anomalies, data exfiltration, and credential misuse in real-time"
             duration="1:00 — Database Protection Overview"
@@ -542,11 +564,14 @@ export default function SentrixiLanding() {
             <h2 style={{ fontFamily: "Syne", fontSize: 40, fontWeight: 700, color: "#e2e8f0", marginBottom: 8 }}>AEGIS Sentinel</h2>
             <p style={{ fontFamily: "Syne", fontSize: 20, color: "#c4b5fd", marginBottom: 8 }}>Full AI SIEM — Connect to Any Datalake</p>
             <p style={{ color: "#94a3b8", maxWidth: 680, margin: "0 auto", fontFamily: "DM Sans", lineHeight: 1.6 }}>Route all enterprise telemetry into your existing datalake — HTAP, Snowflake, Databricks, S3, or any storage engine. Thirty-plus specialized AI agents detect, triage, investigate, and respond across every source, with HTAP performance advantages when available.</p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 16, marginTop: 32, marginBottom: 48 }}>
+              <button className="cta-btn cta-primary" onClick={() => setModal("briefing")}>Request AI Security Briefing</button>
+              <button className="cta-btn cta-secondary" onClick={() => setModal("sandbox")}>Request Sandbox Access</button>
+            </div>
           </div>
 
           <VideoPlayer
-            src="/videos/AEGIS_SENTINEL.mp4"
-            poster="/videos/AEGIS_SENTINEL_poster.jpg"
+            src="/videos/sentinel-overview.mp4"
             title="The SIEM That Lives Where Your Data Lives"
             description="See how 30+ AI agents correlate across identity, endpoint, email, cloud, network, and database telemetry"
             duration="1:00 — AI SIEM on Any Datalake"
