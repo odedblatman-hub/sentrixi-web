@@ -17,6 +17,7 @@ export default function Home() {
           <Link href="/shield" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SHIELD</Link>
           <Link href="/sentinel" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SENTINEL</Link>
           <Link href="/investors" style={{ color: "#a78bfa", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>INVESTORS</Link>
+          <Link href="/research-area" style={{ color: "#10b981", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>RESEARCH AREA</Link>
           <a href="mailto:register@sentrixi.com" style={{ padding: "0.4rem 1.2rem", border: "1px solid rgba(0,210,255,0.4)", borderRadius: "4px", color: "#00d4ff", textDecoration: "none", fontSize: "0.78rem", letterSpacing: "0.08em" }}>CONTACT</a>
         </div>
       </nav>
