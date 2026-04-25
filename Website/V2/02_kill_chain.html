@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — Kill Chain Analysis</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;--bg4:#1a202c;
+  --card:#111827;--card2:#1a2234;
+  --border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;--dim:#475569;
+  --blue:#3b82f6;--blue2:#60a5fa;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.06);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.06);--ambertext:#fbbf24;
+  --purple:#a78bfa;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+.mono{font-family:'JetBrains Mono',monospace}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}.breadcrumb span{color:var(--gray)}
+
+.page{padding:1.25rem 1.5rem;max-width:1200px;margin:0 auto}
+
+/* INCIDENT HEADER */
+.incident-header{display:flex;align-items:flex-start;justify-content:space-between;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:1rem}
+.ih-left{display:flex;gap:1rem;align-items:flex-start}
+.ih-icon{width:48px;height:48px;border-radius:10px;background:var(--redbg);border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.ih-title{font-size:1.1rem;font-weight:700}
+.ih-meta{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);margin-top:.25rem;display:flex;gap:1rem;flex-wrap:wrap}
+.ih-tag{padding:.15rem .5rem;border-radius:3px;font-size:.65rem;font-weight:600}
+.ih-tag.critical{background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.2)}
+.ih-tag.host{background:var(--bluebg);color:var(--blue2);border:1px solid rgba(59,130,246,.2)}
+.ih-tag.agents{background:var(--amberbg);color:var(--ambertext);border:1px solid rgba(245,158,11,.2)}
+.ih-right{text-align:right}
+.confidence-big{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:800;color:var(--redtext);line-height:1}
+.confidence-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem}
+.detect-time{font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--greentext);margin-top:.35rem}
+
+/* KILL CHAIN */
+.kc-section{margin-bottom:1rem}
+.kc-header{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
+.kc-header::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.kc-timeline{position:relative;padding-left:2rem}
+.kc-timeline::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:2px;background:var(--border)}
+
+.kc-step{position:relative;padding:.75rem 0 .75rem 1.5rem;border-bottom:1px solid rgba(30,41,59,.3)}
+.kc-step:last-child{border:none}
+.kc-dot{position:absolute;left:-2rem;top:.95rem;width:10px;height:10px;border-radius:50%;border:2px solid var(--border2);background:var(--bg);z-index:2}
+.kc-step.red .kc-dot{border-color:var(--red);background:var(--red);box-shadow:0 0 10px rgba(239,68,68,.4)}
+.kc-step.amber .kc-dot{border-color:var(--amber);background:var(--amber);box-shadow:0 0 10px rgba(245,158,11,.4)}
+.kc-step.blocked .kc-dot{border-color:var(--muted);background:var(--muted)}
+
+.kc-phase{font-weight:700;font-size:.85rem;display:flex;align-items:center;gap:.5rem}
+.kc-phase .phase-tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:.1rem .4rem;border-radius:3px;background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.15)}
+.kc-step.blocked .kc-phase{color:var(--muted)}
+.kc-mitre{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.15rem}
+.kc-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--ambertext);margin-top:.15rem}
+.kc-desc{font-size:.8rem;color:var(--gray);margin-top:.4rem;line-height:1.5}
+.kc-technique{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--blue2);margin-top:.2rem}
+.kc-blocked-text{font-style:italic;color:var(--muted);font-size:.8rem;margin-top:.35rem}
+
+/* PROCESS TREE */
+.ptree{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:2;color:var(--gray);margin-top:1rem;overflow-x:auto}
+.ptree .bold{color:var(--white);font-weight:600}
+.ptree .red{color:var(--redtext)}
+.ptree .amber{color:var(--ambertext)}
+.ptree .blue{color:var(--blue2)}
+
+/* FORENSIC ANALYSIS BOX */
+.forensic-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:1.25rem;margin-top:1rem}
+.forensic-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--blue2);margin-bottom:.75rem}
+.forensic-text{font-size:.8rem;color:var(--gray);line-height:1.7}
+.forensic-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+
+/* THREAT ACTOR MATCH */
+.ta-section{margin-top:1rem}
+.ta-row{display:flex;align-items:center;gap:.75rem;padding:.5rem 0}
+.ta-name{font-weight:600;font-size:.85rem;width:140px;flex-shrink:0}
+.ta-bar-wrap{flex:1;height:20px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.ta-bar{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:.5rem}
+.ta-pct{font-family:'JetBrains Mono',monospace;font-size:.75rem;font-weight:700;width:50px;text-align:right;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Kill Chain Analysis <span>›</span> svchost.exe (PID 4712)</div>
+  </div>
+</div>
+
+<div class="page">
+  <!-- INCIDENT HEADER -->
+  <div class="incident-header">
+    <div class="ih-left">
+      <div class="ih-icon">⚠️</div>
+      <div>
+        <div class="ih-title">svchost.exe — suspected process compromise</div>
+        <div class="ih-meta">
+          <span>C:\Windows\System32\svchost.exe -k netsvcs -p</span>
+        </div>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap">
+          <span class="ih-tag critical">Critical</span>
+          <span class="ih-tag host">DVWS-PC01</span>
+          <span class="ih-tag agents">7 agents triggered</span>
+        </div>
+      </div>
+    </div>
+    <div class="ih-right">
+      <div class="confidence-big">0.96</div>
+      <div class="confidence-label">Threat Confidence</div>
+      <div class="detect-time">Detected in 23ms</div>
+    </div>
+  </div>
+
+  <!-- KILL CHAIN -->
+  <div class="kc-section">
+    <div class="kc-header">Attack Kill Chain — MITRE ATT&CK v14</div>
+    <div class="kc-timeline">
+      <div class="kc-step red">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Initial access <span class="phase-tag">TA0001</span></div>
+        <div class="kc-time">+0ms</div>
+        <div class="kc-desc">Phishing payload opened via Outlook — macro-enabled .xlsm attachment</div>
+        <div class="kc-technique">T1566.001 — Spearphishing attachment</div>
+      </div>
+      <div class="kc-step red">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Execution <span class="phase-tag">TA0002</span></div>
+        <div class="kc-time">+120ms</div>
+        <div class="kc-desc">EXCEL.EXE spawned cmd.exe → mshta.exe with encoded HTA payload</div>
+        <div class="kc-technique">T1059.001 — PowerShell · T1218.005 — Mshta</div>
+      </div>
+      <div class="kc-step red">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Persistence <span class="phase-tag">TA0003</span></div>
+        <div class="kc-time">+340ms</div>
+        <div class="kc-desc">Registry Run key added: HKCU\Software\Microsoft\Windows\CurrentVersion\Run\svcUpdate</div>
+        <div class="kc-technique">T1547.001 — Registry run keys</div>
+      </div>
+      <div class="kc-step red">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Defense evasion <span class="phase-tag">TA0005</span></div>
+        <div class="kc-time">+410ms</div>
+        <div class="kc-desc">Process injection into svchost.exe via NtCreateThreadEx — hollow process detected<br>certutil.exe used to decode base64 payload from %TEMP% — LOLBin chain</div>
+        <div class="kc-technique">T1055.012 — Process hollowing · T1140 — Deobfuscate/decode · T1218 — LOLBin</div>
+      </div>
+      <div class="kc-step red">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Credential access <span class="phase-tag">TA0006</span></div>
+        <div class="kc-time">+890ms</div>
+        <div class="kc-desc">LSASS memory access from svchost.exe (PID 4712) — credential dump attempt</div>
+        <div class="kc-technique">T1003.001 — LSASS memory</div>
+      </div>
+      <div class="kc-step amber">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Lateral movement <span class="phase-tag">TA0008</span></div>
+        <div class="kc-time">+1.2s</div>
+        <div class="kc-desc">SMB connection attempt to DVWS-DC02 (domain controller) with harvested credentials</div>
+        <div class="kc-technique">T1021.002 — SMB/Windows Admin Shares</div>
+      </div>
+      <div class="kc-step amber">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Command & control <span class="phase-tag">TA0011</span></div>
+        <div class="kc-time">+1.6s</div>
+        <div class="kc-desc">DNS beaconing to randomly generated subdomain pattern — 30s interval detected</div>
+        <div class="kc-technique">T1071.004 — DNS · T1568.002 — DGA</div>
+      </div>
+      <div class="kc-step blocked">
+        <div class="kc-dot"></div>
+        <div class="kc-phase">Exfiltration <span class="phase-tag" style="background:var(--greenbg);color:var(--greentext);border-color:rgba(34,197,94,.2)">TA0010 · BLOCKED</span></div>
+        <div class="kc-blocked-text">Blocked — Guardian response contained the endpoint at +1.8s</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESS TREE -->
+  <div class="kc-header" style="margin-top:1.5rem">Process Tree — DVWS-PC01</div>
+  <div class="ptree">
+    <div>explorer.exe <span class="blue">(PID 1204)</span></div>
+    <div>&nbsp;&nbsp;├─ OUTLOOK.EXE <span class="blue">(PID 3388)</span></div>
+    <div>&nbsp;&nbsp;├─ EXCEL.EXE <span class="blue">(PID 3920)</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="bold">cmd.exe <span class="blue">(PID 4100)</span></span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="bold">mshta.exe <span class="blue">(PID 4356)</span></span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="bold">powershell.exe <span class="blue">(PID 4501)</span></span> -enc [base64]</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ certutil.exe <span class="blue">(PID 4644)</span> -decode %TEMP%\update.b64</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="red">svchost.exe <span class="blue">(PID 4712)</span> ← INJECTED</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├─ <span class="red">LSASS access (credential dump)</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└─ <span class="amber">SMB → DVWS-DC02 (blocked)</span></div>
+  </div>
+
+  <!-- FORENSIC ANALYSIS -->
+  <div class="forensic-box">
+    <div class="forensic-label">AEGIS Forensic Analysis — Claude Opus</div>
+    <div class="forensic-text">AEGIS detected a multi-stage attack chain originating from a spearphishing attachment. The attack followed a classic LOLBin chain: EXCEL.EXE → cmd.exe → mshta.exe → powershell.exe → certutil.exe, culminating in process injection into svchost.exe (PID 4712) via NtCreateThreadEx hollowing. The compromised svchost process immediately attempted LSASS credential dumping and established DNS-based C2 beaconing with DGA characteristics. Lateral movement to the domain controller DVWS-DC02 via SMB was attempted with harvested credentials. Guardian autonomous response contained the endpoint within 1.8 seconds of initial detection, blocking exfiltration. The attack pattern matches Scattered Spider TTPs at 84% confidence.</div>
+    <div class="forensic-meta">Generated Apr 22, 2026 14:32 UTC · 7 agents corroborated · Total detection-to-containment: 1.8s</div>
+  </div>
+
+  <!-- THREAT ACTOR MATCH -->
+  <div class="kc-header" style="margin-top:1.5rem">Threat Actor Pattern Match</div>
+  <div class="ta-section">
+    <div class="ta-row">
+      <div class="ta-name">Scattered Spider</div>
+      <div class="ta-bar-wrap"><div class="ta-bar" style="width:84%;background:linear-gradient(90deg,#ef4444,#f87171)"></div></div>
+      <div class="ta-pct" style="color:var(--redtext)">84%</div>
+    </div>
+    <div class="ta-row">
+      <div class="ta-name">Volt Typhoon</div>
+      <div class="ta-bar-wrap"><div class="ta-bar" style="width:67%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
+      <div class="ta-pct" style="color:var(--ambertext)">67%</div>
+    </div>
+    <div class="ta-row">
+      <div class="ta-name">Lazarus Group</div>
+      <div class="ta-bar-wrap"><div class="ta-bar" style="width:42%;background:linear-gradient(90deg,#64748b,#94a3b8)"></div></div>
+      <div class="ta-pct" style="color:var(--gray)">42%</div>
+    </div>
+    <div class="ta-row">
+      <div class="ta-name">APT41</div>
+      <div class="ta-bar-wrap"><div class="ta-bar" style="width:31%;background:linear-gradient(90deg,#475569,#64748b)"></div></div>
+      <div class="ta-pct" style="color:var(--muted)">31%</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentrixi — AEGIS</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06080d;--bg2:#0b0e16;--bg3:#10141e;
+  --card:#121828;--card2:#171d2e;
+  --border:#1a2035;--border2:#243050;
+  --white:#f0f2f8;--gray:#8892aa;--muted:#4a5270;
+  --blue:#3b82f6;--blue2:#60a5fa;--blueglow:rgba(59,130,246,.15);
+  --red:#ef4444;--redglow:rgba(239,68,68,.08);
+  --green:#22c55e;--greenglow:rgba(34,197,94,.1);
+  --amber:#f59e0b;
+  --grad1:linear-gradient(135deg,#3b82f6,#8b5cf6);
+  --grad2:linear-gradient(135deg,#ef4444,#f59e0b);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--white);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;background:rgba(6,8,13,.8);backdrop-filter:blur(24px);border-bottom:1px solid rgba(26,32,53,.5)}
+.logo{font-weight:700;font-size:1.1rem;letter-spacing:.18em;text-transform:uppercase}
+.logo span{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-r{display:flex;align-items:center;gap:2rem}
+.nav-r a{color:var(--gray);text-decoration:none;font-size:.85rem;font-weight:500;transition:.2s}
+.nav-r a:hover{color:var(--white)}
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.6rem;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none;transition:all .25s;cursor:pointer;border:none}
+.btn-p{background:var(--blue);color:#fff}
+.btn-p:hover{background:#2563eb;transform:translateY(-1px);box-shadow:0 8px 30px rgba(59,130,246,.3)}
+.btn-o{border:1px solid var(--border2);color:var(--white);background:transparent}
+.btn-o:hover{border-color:var(--blue);background:var(--blueglow)}
+
+/* sections */
+section{position:relative}
+.container{max-width:1200px;margin:0 auto;padding:0 2rem}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;overflow:hidden}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(120px);animation:orbFloat 8s ease-in-out infinite}
+.hero-orb.o1{width:500px;height:500px;background:rgba(59,130,246,.12);top:-10%;right:-5%;animation-delay:0s}
+.hero-orb.o2{width:400px;height:400px;background:rgba(139,92,246,.08);bottom:0;left:-5%;animation-delay:2s}
+.hero-orb.o3{width:300px;height:300px;background:rgba(239,68,68,.06);top:30%;left:40%;animation-delay:4s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-30px)}}
+
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.03) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 60% 50% at 50% 50%,black 20%,transparent 70%)}
+
+.hero-content{position:relative;text-align:center;max-width:800px;padding:8rem 2rem 4rem}
+.hero-tag{display:inline-flex;align-items:center;gap:.5rem;padding:.4rem 1rem;border-radius:99px;border:1px solid var(--border2);background:var(--card);font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.08em;color:var(--blue2);margin-bottom:2rem;text-transform:uppercase}
+.hero-tag .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero h1{font-size:clamp(2.5rem,6vw,4.2rem);font-weight:700;line-height:1.15;letter-spacing:-.02em;margin-bottom:1.5rem}
+.hero h1 .highlight{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:1.15rem;color:var(--gray);line-height:1.7;max-width:580px;margin:0 auto 2.5rem;font-weight:300}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+
+/* ANIMATED STACK SECTION */
+.stack-section{padding:8rem 0;overflow:hidden}
+.stack-section .container{text-align:center}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--blue);margin-bottom:1rem}
+.sec-title{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:600;margin-bottom:1rem;line-height:1.3}
+.sec-sub{font-size:1rem;color:var(--gray);max-width:500px;margin:0 auto 3.5rem;font-weight:300}
+
+/* animated stack visual */
+.stack-visual{display:flex;flex-direction:column;align-items:center;gap:0;max-width:700px;margin:0 auto;position:relative}
+.stack-layer{width:100%;display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border:1px solid var(--border);background:var(--card);position:relative;transition:all .4s;opacity:0;transform:translateY(20px)}
+.stack-layer.visible{opacity:1;transform:translateY(0)}
+.stack-layer:first-child{border-radius:12px 12px 0 0}
+.stack-layer:last-child{border-radius:0 0 12px 12px}
+.stack-layer .icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.stack-layer .icon.green{background:var(--greenglow);color:var(--green)}
+.stack-layer .info{flex:1;text-align:left}
+.stack-layer .info .name{font-weight:600;font-size:.9rem}
+.stack-layer .info .vendors{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+.stack-layer .badge{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;padding:.25rem .6rem;border-radius:4px;letter-spacing:.05em}
+.badge-ok{background:var(--greenglow);color:var(--green)}
+.badge-gap{background:var(--redglow);color:var(--red);animation:pulseGap 2s infinite}
+@keyframes pulseGap{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.3)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+
+.stack-layer.gap-layer{border:1px solid rgba(239,68,68,.3);background:linear-gradient(135deg,rgba(239,68,68,.05),rgba(245,158,11,.03))}
+.stack-layer.gap-layer .icon{background:var(--redglow);color:var(--red)}
+.stack-layer.gap-layer::after{content:'';position:absolute;right:-60px;top:50%;transform:translateY(-50%);width:50px;height:2px;background:var(--grad1);opacity:0;transition:opacity .6s}
+.stack-layer.gap-layer.visible::after{opacity:1}
+.aegis-badge{position:absolute;right:-140px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:8px;background:var(--grad1);font-weight:600;font-size:.8rem;white-space:nowrap;opacity:0;transition:all .6s;box-shadow:0 4px 30px rgba(59,130,246,.3)}
+.stack-layer.gap-layer.visible .aegis-badge{opacity:1}
+
+/* THREAT STATS */
+.stats-section{padding:6rem 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:16px;overflow:hidden;max-width:900px;margin:0 auto}
+.stat-card{background:var(--bg2);padding:2.5rem 1.5rem;text-align:center;transition:background .3s}
+.stat-card:hover{background:var(--card)}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;line-height:1;margin-bottom:.5rem;background:var(--grad2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.8rem;color:var(--gray);line-height:1.5;font-weight:400}
+.stat-src{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.75rem;opacity:.6}
+
+/* HOW IT WORKS — ANIMATED FLOW */
+.flow-section{padding:8rem 0}
+.flow-section .container{text-align:center}
+
+.flow-visual{position:relative;max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:0;padding:2rem 0}
+.flow-node{display:flex;flex-direction:column;align-items:center;gap:.75rem;position:relative;z-index:2}
+.flow-circle{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;border:2px solid var(--border2);background:var(--card);transition:all .4s;position:relative}
+.flow-node:hover .flow-circle{border-color:var(--blue);box-shadow:0 0 40px var(--blueglow);transform:scale(1.08)}
+.flow-circle.active{border-color:var(--blue);box-shadow:0 0 40px var(--blueglow)}
+.flow-label{font-size:.75rem;font-weight:600;max-width:100px;text-align:center;line-height:1.4}
+.flow-sublabel{font-size:.65rem;color:var(--muted);max-width:110px;text-align:center;line-height:1.4}
+
+.flow-connector{flex:1;height:2px;background:var(--border);position:relative;z-index:1}
+.flow-connector .flow-pulse{position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 12px var(--blue);animation:flowPulse 3s linear infinite;opacity:0}
+.flow-section.in-view .flow-pulse{opacity:1}
+@keyframes flowPulse{0%{left:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{left:calc(100% - 8px);opacity:0}}
+.flow-connector:nth-child(4) .flow-pulse{animation-delay:.6s}
+.flow-connector:nth-child(6) .flow-pulse{animation-delay:1.2s}
+.flow-connector:nth-child(8) .flow-pulse{animation-delay:1.8s}
+
+/* detection cards */
+.detect-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:900px;margin:3rem auto 0}
+.detect-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:left;transition:all .3s;position:relative;overflow:hidden}
+.detect-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.detect-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad1);opacity:0;transition:opacity .3s}
+.detect-card:hover::before{opacity:1}
+.detect-icon{font-size:1.5rem;margin-bottom:.75rem}
+.detect-card h3{font-size:.9rem;font-weight:600;margin-bottom:.35rem}
+.detect-card p{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* SCENARIO SECTION */
+.scenario-section{padding:6rem 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.scenario-visual{max-width:800px;margin:0 auto;position:relative}
+.timeline{display:flex;flex-direction:column;gap:0;position:relative}
+.timeline::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border)}
+.tl-item{display:flex;gap:1.25rem;padding:1.25rem 0;position:relative}
+.tl-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--border2);background:var(--bg2);flex-shrink:0;margin-top:.35rem;position:relative;z-index:2;margin-left:19px;transition:all .4s}
+.tl-item.danger .tl-dot{border-color:var(--red);background:var(--red);box-shadow:0 0 12px rgba(239,68,68,.4)}
+.tl-item.safe .tl-dot{border-color:var(--green);background:var(--green);box-shadow:0 0 12px rgba(34,197,94,.4)}
+.tl-content{flex:1}
+.tl-time{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-bottom:.25rem}
+.tl-text{font-size:.85rem;color:var(--gray);line-height:1.6}
+.tl-text strong{color:var(--white);font-weight:600}
+.tl-item.danger .tl-text strong{color:var(--red)}
+.tl-item.safe .tl-text strong{color:var(--green)}
+
+.scenario-split{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:2.5rem}
+.scenario-outcome{border-radius:12px;padding:1.5rem;border:1px solid var(--border)}
+.scenario-outcome.bad{background:var(--redglow);border-color:rgba(239,68,68,.2)}
+.scenario-outcome.good{background:var(--greenglow);border-color:rgba(34,197,94,.2)}
+.outcome-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.75rem;font-weight:600}
+.scenario-outcome.bad .outcome-label{color:var(--red)}
+.scenario-outcome.good .outcome-label{color:var(--green)}
+.outcome-stat{font-size:1.8rem;font-weight:700;line-height:1;margin-bottom:.25rem}
+.scenario-outcome.bad .outcome-stat{color:var(--red)}
+.scenario-outcome.good .outcome-stat{color:var(--green)}
+.outcome-desc{font-size:.8rem;color:var(--gray);line-height:1.5}
+
+/* VENDOR SECTION */
+.vendor-section{padding:8rem 0}
+.value-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;max-width:900px;margin:3rem auto 0}
+.value-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2rem;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.value-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 16px 50px rgba(0,0,0,.3)}
+.value-num{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem}
+.value-card h3{font-size:.85rem;font-weight:600;margin-bottom:.35rem}
+.value-card p{font-size:.75rem;color:var(--muted);line-height:1.5}
+
+/* COMPLIANCE */
+.compliance-section{padding:4rem 0 6rem;text-align:center}
+.compliance-row{display:flex;justify-content:center;gap:.75rem;flex-wrap:wrap;margin-top:2rem}
+.comp-chip{padding:.5rem 1.2rem;border-radius:99px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:500;color:var(--gray);transition:all .3s;cursor:default}
+.comp-chip:hover{border-color:var(--blue);color:var(--blue);background:var(--blueglow)}
+
+/* FOUNDER */
+.founder-section{padding:6rem 0;border-top:1px solid var(--border)}
+.founder-row{display:flex;align-items:center;gap:3rem;max-width:800px;margin:0 auto}
+.founder-av{width:100px;height:100px;border-radius:50%;background:var(--grad1);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;flex-shrink:0;box-shadow:0 8px 40px rgba(59,130,246,.2)}
+.founder-info h3{font-size:1.2rem;font-weight:600}
+.founder-info .role{font-size:.85rem;color:var(--blue);margin-bottom:.75rem}
+.founder-info p{font-size:.85rem;color:var(--gray);line-height:1.7}
+.founder-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem}
+.f-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:.3rem .65rem;border-radius:4px;border:1px solid var(--border);color:var(--muted)}
+
+/* CTA */
+.cta-section{padding:8rem 0;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.08),transparent 70%);pointer-events:none}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+.cta-email{margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+.cta-email a{color:var(--blue);text-decoration:none}
+
+footer{padding:3rem 2rem;text-align:center;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border)}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .flow-visual{flex-direction:column;gap:0}
+  .flow-connector{width:2px;height:30px;flex:none}
+  .flow-connector .flow-pulse{display:none}
+  .detect-grid,.value-cards,.scenario-split{grid-template-columns:1fr}
+  .founder-row{flex-direction:column;text-align:center}
+  .aegis-badge{display:none}
+  .stack-layer.gap-layer::after{display:none}
+  .nav-r a:not(.btn){display:none}
+  .hero-content{padding:7rem 1rem 3rem}
+}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(30px);transition:all .7s cubic-bezier(.16,1,.3,1)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-d1{transition-delay:.1s}
+.reveal-d2{transition-delay:.2s}
+.reveal-d3{transition-delay:.3s}
+.reveal-d4{transition-delay:.4s}
+.reveal-d5{transition-delay:.5s}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">SENTRI<span>XI</span></div>
+  <div class="nav-r">
+    <a href="#stack">The Gap</a>
+    <a href="#flow">Product</a>
+    <a href="#vendors">Vendors</a>
+    <a href="#contact" class="btn btn-p">Request Briefing</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb o1"></div>
+    <div class="hero-orb o2"></div>
+    <div class="hero-orb o3"></div>
+    <div class="hero-grid"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag"><span class="dot"></span> AEGIS — Now in Design Partner Preview</div>
+    <h1>Every layer is defended.<br>Except <span class="highlight">the data.</span></h1>
+    <p>AEGIS embeds behavioral security directly into the database platform — detecting insider threats, credential misuse, and exfiltration at the query layer, in real time.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn btn-p">Request Technical Briefing →</a>
+      <a href="#stack" class="btn btn-o">See the Gap ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- STACK VISUAL -->
+<section class="stack-section" id="stack">
+  <div class="container" style="text-align:center">
+    <div class="sec-label">The Blind Spot</div>
+    <div class="sec-title">Your security stack is world-class.<br>It has one gap.</div>
+    <div class="sec-sub">Every vendor protects a layer. None protect the database at the behavioral level.</div>
+
+    <div class="stack-visual">
+      <div class="stack-layer reveal" style="transition-delay:0s">
+        <div class="icon green">🛡</div>
+        <div class="info"><div class="name">Endpoint</div><div class="vendors">CrowdStrike · SentinelOne · Defender</div></div>
+        <div class="badge badge-ok">COVERED</div>
+      </div>
+      <div class="stack-layer reveal" style="transition-delay:.08s">
+        <div class="icon green">🌐</div>
+        <div class="info"><div class="name">Network</div><div class="vendors">Palo Alto · Fortinet · Zscaler</div></div>
+        <div class="badge badge-ok">COVERED</div>
+      </div>
+      <div class="stack-layer reveal" style="transition-delay:.16s">
+        <div class="icon green">☁️</div>
+        <div class="info"><div class="name">Cloud / CSPM</div><div class="vendors">Wiz · Orca · Prisma Cloud</div></div>
+        <div class="badge badge-ok">COVERED</div>
+      </div>
+      <div class="stack-layer reveal" style="transition-delay:.24s">
+        <div class="icon green">🔑</div>
+        <div class="info"><div class="name">Identity</div><div class="vendors">Okta · CyberArk · SailPoint</div></div>
+        <div class="badge badge-ok">COVERED</div>
+      </div>
+      <div class="stack-layer reveal gap-layer" style="transition-delay:.4s">
+        <div class="icon">🗄️</div>
+        <div class="info"><div class="name">Database Layer</div><div class="vendors">No behavioral detection exists</div></div>
+        <div class="badge badge-gap">EXPOSED</div>
+        <div class="aegis-badge">← AEGIS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THREAT STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card reveal">
+        <div class="stat-num" data-target="68" data-suffix="%">0%</div>
+        <div class="stat-label">of breaches reach the data layer</div>
+        <div class="stat-src">Verizon DBIR 2025</div>
+      </div>
+      <div class="stat-card reveal reveal-d1">
+        <div class="stat-num" data-target="277" data-suffix=" days">0 days</div>
+        <div class="stat-label">avg. to detect insider threats</div>
+        <div class="stat-src">IBM / Ponemon 2025</div>
+      </div>
+      <div class="stat-card reveal reveal-d2">
+        <div class="stat-num" data-target="4.9" data-suffix="M" data-prefix="$" data-decimal="true">$0M</div>
+        <div class="stat-label">avg. cost of insider breach</div>
+        <div class="stat-src">IBM Cost of Breach 2025</div>
+      </div>
+      <div class="stat-card reveal reveal-d3">
+        <div class="stat-num" data-target="20" data-suffix="ms" data-prefix="<">0ms</div>
+        <div class="stat-label">AEGIS detection latency</div>
+        <div class="stat-src">Sentrixi benchmark</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS — FLOW -->
+<section class="flow-section" id="flow">
+  <div class="container" style="text-align:center">
+    <div class="sec-label">How AEGIS Works</div>
+    <div class="sec-title">API-native sidecar. Zero production impact.</div>
+    <div class="sec-sub">AEGIS observes database telemetry — not production queries. No proxy. No latency.</div>
+
+    <div class="flow-visual">
+      <div class="flow-node reveal">
+        <div class="flow-circle">📱</div>
+        <div class="flow-label">Application</div>
+        <div class="flow-sublabel">Queries flow normally</div>
+      </div>
+      <div class="flow-connector"><div class="flow-pulse"></div></div>
+      <div class="flow-node reveal reveal-d1">
+        <div class="flow-circle">🗄️</div>
+        <div class="flow-label">Database Engine</div>
+        <div class="flow-sublabel">Emits telemetry via API</div>
+      </div>
+      <div class="flow-connector"><div class="flow-pulse"></div></div>
+      <div class="flow-node reveal reveal-d2">
+        <div class="flow-circle active">⚡</div>
+        <div class="flow-label">AEGIS Sidecar</div>
+        <div class="flow-sublabel">Behavioral analysis</div>
+      </div>
+      <div class="flow-connector"><div class="flow-pulse"></div></div>
+      <div class="flow-node reveal reveal-d3">
+        <div class="flow-circle">🎯</div>
+        <div class="flow-label">Detection Engine</div>
+        <div class="flow-sublabel">AI triage + MITRE mapping</div>
+      </div>
+      <div class="flow-connector"><div class="flow-pulse"></div></div>
+      <div class="flow-node reveal reveal-d4">
+        <div class="flow-circle">🔔</div>
+        <div class="flow-label">SOC Alert</div>
+        <div class="flow-sublabel">Evidence + containment</div>
+      </div>
+    </div>
+
+    <div class="detect-grid">
+      <div class="detect-card reveal">
+        <div class="detect-icon">👤</div>
+        <h3>Insider Threats</h3>
+        <p>Per-user behavioral baselines. Anomalous queries, volume spikes, and temporal deviations flagged in real time.</p>
+      </div>
+      <div class="detect-card reveal reveal-d1">
+        <div class="detect-icon">🔓</div>
+        <h3>Credential Misuse</h3>
+        <p>Behavioral fingerprinting detects compromised credentials — even when the login succeeds and permissions check out.</p>
+      </div>
+      <div class="detect-card reveal reveal-d2">
+        <div class="detect-icon">📤</div>
+        <h3>Data Exfiltration</h3>
+        <p>Unusual volumes, off-hours queries, systematic scanning, and staged exports caught at the earliest possible layer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIO -->
+<section class="scenario-section">
+  <div class="container">
+    <div style="text-align:center">
+      <div class="sec-label">Real-World Scenario</div>
+      <div class="sec-title">What this looks like in practice.</div>
+      <div class="sec-sub" style="margin:0 auto 2.5rem">Sanitized from active DFIR investigation.</div>
+    </div>
+
+    <div class="scenario-visual">
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="tl-time">WEEK 1</div>
+            <div class="tl-text"><strong>DBA runs bulk SELECTs on PII tables after hours.</strong> Valid credentials. Within IAM permissions. Every security tool reports green.</div>
+          </div>
+        </div>
+        <div class="tl-item reveal reveal-d1">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="tl-time">WEEKS 2–6</div>
+            <div class="tl-text"><strong>2.3M records extracted in small batches</strong> — sized below alerting thresholds. No EDR, SIEM, or CSPM triggers. Pattern is invisible to perimeter tools.</div>
+          </div>
+        </div>
+        <div class="tl-item danger reveal reveal-d2">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="tl-time">MONTH 4 — WITHOUT AEGIS</div>
+            <div class="tl-text"><strong>Discovered during routine access review.</strong> Data already sold. Regulatory notification triggered retroactively.</div>
+          </div>
+        </div>
+        <div class="tl-item safe reveal reveal-d3">
+          <div class="tl-dot"></div>
+          <div class="tl-content">
+            <div class="tl-time">HOUR 72 — WITH AEGIS</div>
+            <div class="tl-text"><strong>Behavioral baseline flags anomaly within 3 days.</strong> Full query timeline, affected tables, and row trajectory sent to SOC. Contained same week.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scenario-split">
+        <div class="scenario-outcome bad reveal">
+          <div class="outcome-label">Without AEGIS</div>
+          <div class="outcome-stat">4 months</div>
+          <div class="outcome-desc">to detect · 2.3M records lost · $11M+ exposure · regulatory fallout</div>
+        </div>
+        <div class="scenario-outcome good reveal reveal-d1">
+          <div class="outcome-label">With AEGIS</div>
+          <div class="outcome-stat">72 hours</div>
+          <div class="outcome-desc">to detect · 0 records lost · SOC alerted with full evidence · contained</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR VENDORS -->
+<section class="vendor-section" id="vendors">
+  <div class="container" style="text-align:center">
+    <div class="sec-label">For Database Vendors</div>
+    <div class="sec-title">Security becomes native to the platform.<br>Like TLS became native to the web server.</div>
+    <div class="sec-sub">AEGIS creates new revenue, pulls consumption, and builds a moat OLAP vendors can't replicate.</div>
+
+    <div class="value-cards">
+      <div class="value-card reveal">
+        <div class="value-num">65%+</div>
+        <h3>OEM Gross Margin</h3>
+        <p>Royalty revenue with zero COGS exposure for the vendor</p>
+      </div>
+      <div class="value-card reveal reveal-d1">
+        <div class="value-num">$400K</div>
+        <h3>DBaaS Pull-Through</h3>
+        <p>Annual consumption lift per AEGIS customer</p>
+      </div>
+      <div class="value-card reveal reveal-d2">
+        <div class="value-num">+25%</div>
+        <h3>Tier Pricing Uplift</h3>
+        <p>Enterprise pricing justified by embedded security</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLIANCE -->
+<section class="compliance-section">
+  <div class="container">
+    <div class="sec-label" style="text-align:center">Continuous Compliance</div>
+    <div class="sec-title" style="text-align:center">Audit evidence, generated automatically.</div>
+    <div class="compliance-row">
+      <div class="comp-chip">NYDFS 500</div>
+      <div class="comp-chip">SOC 2 Type II</div>
+      <div class="comp-chip">PCI-DSS 4.0</div>
+      <div class="comp-chip">DORA</div>
+      <div class="comp-chip">GDPR Art. 32</div>
+      <div class="comp-chip">ISO 27001</div>
+      <div class="comp-chip">HIPAA</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="founder-section">
+  <div class="container">
+    <div class="founder-row reveal">
+      <div class="founder-av">OB</div>
+      <div class="founder-info">
+        <h3>Oded Blatman</h3>
+        <div class="role">Founder & CEO</div>
+        <p>CIO & CISO at a NYDFS-regulated crypto custody firm. Built a 20-agent AI behavioral detection and DFIR investigation platform used in active operations against organized cybercrime. 15+ years in regulated financial services security across 30+ global regions.</p>
+        <div class="founder-tags">
+          <div class="f-tag">NYDFS-regulated finserv</div>
+          <div class="f-tag">Active DFIR operations</div>
+          <div class="f-tag">Multi-agent AI systems</div>
+          <div class="f-tag">30+ regions</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="container">
+    <div class="sec-label" style="text-align:center">Get Started</div>
+    <div class="sec-title">See the gap. Close it.</div>
+    <p class="sec-sub" style="margin:1rem auto 0;text-align:center">Selectively partnering with database vendors and enterprises that need database-layer protection that doesn't exist anywhere else.</p>
+    <div class="cta-btns">
+      <a href="mailto:oded@sentrixi.com?subject=AEGIS Technical Briefing" class="btn btn-p">Request Technical Briefing →</a>
+      <a href="mailto:oded@sentrixi.com?subject=AEGIS Sandbox" class="btn btn-o">Request Sandbox Access</a>
+    </div>
+    <div class="cta-email"><a href="mailto:oded@sentrixi.com">oded@sentrixi.com</a></div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo" style="margin-bottom:.75rem">SENTRI<span>XI</span></div>
+  © 2026 Sentrixi Ltd. All rights reserved.
+</footer>
+
+<script>
+// Intersection Observer for reveal animations
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // trigger counter animation
+      if (e.target.querySelector('.stat-num[data-target]')) {
+        animateCounters(e.target);
+      }
+      // trigger flow pulses
+      if (e.target.classList.contains('flow-section')) {
+        e.target.classList.add('in-view');
+      }
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal, .stack-layer, .flow-section').forEach(el => obs.observe(el));
+
+// Counter animation
+function animateCounters(container) {
+  container.querySelectorAll('.stat-num[data-target]').forEach(el => {
+    if (el.dataset.animated) return;
+    el.dataset.animated = 'true';
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const prefix = el.dataset.prefix || '';
+    const isDecimal = el.dataset.decimal === 'true';
+    const duration = 1500;
+    const start = performance.now();
+
+    function tick(now) {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      const current = isDecimal ? (target * ease).toFixed(1) : Math.round(target * ease);
+      el.textContent = prefix + current + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
+// Smooth nav scroll
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const el = document.querySelector(a.getAttribute('href'));
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

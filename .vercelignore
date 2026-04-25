@@ -1,0 +1,10 @@
+node_modules
+.next
+**/node_modules
+**/.next
+Website/
+public/videos
+*.zip
+*.pdf
+*.docx
+*.mp4

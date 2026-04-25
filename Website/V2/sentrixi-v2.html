@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentrixi — AEGIS: Database-Layer Behavioral Security</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0a0b0f;
+    --bg-secondary: #111318;
+    --bg-card: #161820;
+    --bg-card-hover: #1c1e28;
+    --border: #232630;
+    --border-accent: #2a4a6b;
+    --text-primary: #e8eaf0;
+    --text-secondary: #8b90a0;
+    --text-muted: #5a5f72;
+    --accent: #4a9eff;
+    --accent-glow: rgba(74, 158, 255, 0.12);
+    --accent-warm: #ff6b4a;
+    --accent-warm-glow: rgba(255, 107, 74, 0.1);
+    --accent-green: #34d399;
+    --accent-green-glow: rgba(52, 211, 153, 0.1);
+    --accent-amber: #fbbf24;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 1.25rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(10, 11, 15, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 1.15rem;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--text-primary);
+  }
+  .logo span { color: var(--accent); }
+  nav a {
+    color: var(--text-secondary); text-decoration: none;
+    font-size: 0.875rem; font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--text-primary); }
+  .nav-links { display: flex; gap: 2rem; align-items: center; }
+  .btn-primary {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: var(--accent);
+    color: #fff; font-weight: 600; font-size: 0.875rem;
+    border-radius: 6px; text-decoration: none;
+    transition: all 0.25s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: #3d8be6; transform: translateY(-1px); }
+  .btn-outline {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border: 1px solid var(--border);
+    color: var(--text-primary); font-weight: 500; font-size: 0.875rem;
+    border-radius: 6px; text-decoration: none;
+    transition: all 0.25s;
+  }
+  .btn-outline:hover { border-color: var(--accent); background: var(--accent-glow); }
+
+  /* ── SECTIONS ── */
+  section { padding: 6rem 2rem; max-width: 1100px; margin: 0 auto; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .section-label::before {
+    content: ''; display: block;
+    width: 24px; height: 1px; background: var(--accent);
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(2.5rem, 5.5vw, 4rem);
+    line-height: 1.15; font-weight: 400;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+
+  h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.25; font-weight: 400;
+    margin-bottom: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem; font-weight: 600;
+    margin-bottom: 0.5rem; color: var(--text-primary);
+  }
+
+  p.lead {
+    font-size: 1.15rem; line-height: 1.8;
+    color: var(--text-secondary); max-width: 680px;
+  }
+  p.body-text {
+    font-size: 1rem; line-height: 1.8;
+    color: var(--text-secondary); max-width: 680px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding-top: 10rem; padding-bottom: 4rem;
+    position: relative;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(74, 158, 255, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-ctas { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+
+  /* ── THREAT NARRATIVE ── */
+  .threat-section { border-top: 1px solid var(--border); }
+  .threat-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+  .threat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.75rem;
+    transition: all 0.3s;
+  }
+  .threat-card:hover { border-color: var(--border-accent); background: var(--bg-card-hover); }
+  .threat-card .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2rem; font-weight: 500;
+    color: var(--accent-warm); line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+  .threat-card h3 { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .threat-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+  .threat-card .source {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--text-muted);
+    margin-top: 0.75rem; opacity: 0.7;
+  }
+
+  /* ── GAP VISUAL ── */
+  .gap-section { border-top: 1px solid var(--border); }
+  .stack-table {
+    margin-top: 2.5rem;
+    border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  .stack-row {
+    display: grid; grid-template-columns: 180px 1fr 80px;
+    align-items: center; padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .stack-row:last-child { border-bottom: none; }
+  .stack-row .layer { font-weight: 600; color: var(--text-primary); }
+  .stack-row .vendors { color: var(--text-muted); font-size: 0.85rem; }
+  .stack-row .status { text-align: center; }
+  .check { color: var(--accent-green); font-weight: 700; }
+  .gap-row {
+    background: var(--accent-warm-glow);
+    border-left: 3px solid var(--accent-warm);
+  }
+  .gap-row .layer { color: var(--accent-warm); }
+  .gap-row .status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: var(--accent-warm);
+    font-weight: 600;
+  }
+
+  /* ── SCENARIO ── */
+  .scenario-section { border-top: 1px solid var(--border); }
+  .scenario-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 10px; padding: 2rem;
+    margin-top: 2rem;
+  }
+  .scenario-box .scenario-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--accent-warm); margin-bottom: 1rem;
+  }
+  .scenario-box p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; }
+  .scenario-box .outcome {
+    margin-top: 1.25rem; padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .scenario-box .outcome strong { color: var(--accent-warm); }
+  .scenario-box .outcome .with-aegis strong { color: var(--accent-green); }
+
+  /* ── HOW IT WORKS ── */
+  .how-section { border-top: 1px solid var(--border); }
+  .arch-diagram {
+    margin-top: 2.5rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 2.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 2.2;
+    color: var(--text-muted);
+  }
+  .arch-diagram .layer-label {
+    color: var(--text-secondary); font-weight: 500;
+    display: inline-block; min-width: 160px;
+  }
+  .arch-diagram .arrow { color: var(--text-muted); margin: 0 0.5rem; }
+  .arch-diagram .highlight { color: var(--accent); font-weight: 500; }
+  .arch-diagram .warm { color: var(--accent-warm); font-weight: 500; }
+
+  .how-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .how-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.5rem;
+  }
+  .how-card .num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--accent);
+    margin-bottom: 0.75rem;
+  }
+  .how-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ── ECONOMICS ── */
+  .econ-section { border-top: 1px solid var(--border); }
+  .econ-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+    margin-top: 2.5rem;
+  }
+  .econ-column h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .econ-column.vendor h3 { color: var(--accent); }
+  .econ-column.enterprise h3 { color: var(--accent-green); }
+  .econ-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .econ-item:last-child { border-bottom: none; }
+  .econ-item .metric {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.5rem; font-weight: 500;
+    line-height: 1; margin-bottom: 0.35rem;
+  }
+  .econ-column.vendor .metric { color: var(--accent); }
+  .econ-column.enterprise .metric { color: var(--accent-green); }
+  .econ-item .desc { font-size: 0.85rem; color: var(--text-muted); }
+
+  /* ── COMPLIANCE ── */
+  .compliance-section { border-top: 1px solid var(--border); }
+  .compliance-tags {
+    display: flex; gap: 0.75rem; flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .compliance-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 500;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text-secondary);
+  }
+
+  /* ── FOUNDER ── */
+  .founder-section { border-top: 1px solid var(--border); }
+  .founder-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 2.5rem;
+    margin-top: 2rem;
+    display: grid; grid-template-columns: auto 1fr; gap: 2rem;
+    align-items: start;
+  }
+  .founder-avatar {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--accent), #6b3fa0);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1.25rem; color: #fff;
+  }
+  .founder-info h3 { font-size: 1.15rem; margin-bottom: 0.15rem; }
+  .founder-info .title { font-size: 0.85rem; color: var(--accent); margin-bottom: 1rem; }
+  .founder-info p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; }
+  .founder-creds {
+    display: flex; gap: 1.5rem; margin-top: 1.25rem; flex-wrap: wrap;
+  }
+  .cred {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--text-muted);
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--border); border-radius: 4px;
+  }
+
+  /* ── ADVISORY ── */
+  .advisory-note {
+    margin-top: 1.5rem; padding: 1.25rem;
+    border: 1px dashed var(--border); border-radius: 8px;
+    font-size: 0.85rem; color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ── CTA ── */
+  .cta-section {
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .cta-section h2 { margin: 0 auto 0.75rem; }
+  .cta-section p.lead { margin: 0 auto 2rem; text-align: center; }
+  .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .cta-email {
+    margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; color: var(--text-muted);
+  }
+  .cta-email a { color: var(--accent); text-decoration: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 0.8rem; color: var(--text-muted);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .threat-grid, .how-grid, .econ-grid { grid-template-columns: 1fr; }
+    .founder-card { grid-template-columns: 1fr; }
+    .stack-row { grid-template-columns: 120px 1fr 60px; font-size: 0.8rem; }
+    .nav-links a:not(.btn-primary) { display: none; }
+    section { padding: 4rem 1.25rem; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero h1, .hero .lead, .hero-ctas {
+    animation: fadeUp 0.7s ease-out both;
+  }
+  .hero .lead { animation-delay: 0.15s; }
+  .hero-ctas { animation-delay: 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">SENTRI<span>X</span>I</div>
+  <div class="nav-links">
+    <a href="#threat">The Threat</a>
+    <a href="#product">How It Works</a>
+    <a href="#vendors">For Vendors</a>
+    <a href="#enterprises">For Enterprises</a>
+    <a href="#contact" class="btn-primary">Request Briefing</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="section-label">AEGIS by Sentrixi</div>
+  <h1>Your database is the last <em>unprotected</em> layer in your security stack.</h1>
+  <p class="lead">Every endpoint, network path, and cloud workload has behavioral detection. But the data layer — where the records actually live — is defended by nothing more than access controls and audit logs. AEGIS embeds real-time behavioral security directly into the database platform, detecting insider threats, credential misuse, and exfiltration in under 20 milliseconds.</p>
+  <div class="hero-ctas">
+    <a href="#contact" class="btn-primary">Request a Technical Briefing →</a>
+    <a href="#threat" class="btn-outline">Read the Threat Case</a>
+  </div>
+</section>
+
+<!-- THREAT NARRATIVE -->
+<section class="threat-section" id="threat">
+  <div class="section-label">Why Now</div>
+  <h2>The threat moved to the data layer. Your defenses didn't.</h2>
+  <p class="body-text">Attackers don't need zero-days when they have valid credentials. The most damaging breaches of the past three years — from insider exfiltration to compromised service accounts — happened at the database layer, beneath every EDR, NDR, and CSPM tool in the stack. Your perimeter detects the break-in. Nothing detects what happens to the data after.</p>
+
+  <div class="threat-grid">
+    <div class="threat-card">
+      <div class="stat">68%</div>
+      <h3>of breaches involve the data layer</h3>
+      <p>Credential misuse, privilege escalation, and unauthorized data access — not malware — are the primary vectors for data-layer compromise.</p>
+      <div class="source">Verizon DBIR 2025</div>
+    </div>
+    <div class="threat-card">
+      <div class="stat">277 days</div>
+      <h3>average time to detect insider threats</h3>
+      <p>Insider-driven database exfiltration takes 9+ months to identify because no behavioral baseline exists at the query level.</p>
+      <div class="source">IBM / Ponemon 2025</div>
+    </div>
+    <div class="threat-card">
+      <div class="stat">$4.9M</div>
+      <h3>average cost of insider-driven breach</h3>
+      <p>Data-layer breaches are the most expensive category because they involve direct access to production records — not just infrastructure.</p>
+      <div class="source">IBM Cost of a Data Breach 2025</div>
+    </div>
+    <div class="threat-card">
+      <div class="stat">1.6 days</div>
+      <h3>mean time to exploit in 2026</h3>
+      <p>AI-driven exploit generation has collapsed exploitation timelines. Defenders relying on manual detection are structurally outpaced.</p>
+      <div class="source">ZeroDayClock 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- THE GAP -->
+<section class="gap-section" id="gap">
+  <div class="section-label">The Gap</div>
+  <h2>Every layer is covered — except the one that matters most.</h2>
+  <p class="body-text">Your security stack is world-class. CrowdStrike sees the endpoint. Wiz sees the cloud. Palo Alto sees the network. But none of them see what a privileged user queries at 2 AM, or that a service account just exported 4 million rows it's never touched before.</p>
+
+  <div class="stack-table">
+    <div class="stack-row" style="background:var(--bg-secondary); font-weight:600; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.1em;">
+      <div>Layer</div><div>Leading Vendors</div><div class="status">Covered</div>
+    </div>
+    <div class="stack-row">
+      <div class="layer">Endpoint</div>
+      <div class="vendors">CrowdStrike, SentinelOne, Microsoft Defender</div>
+      <div class="status"><span class="check">✓</span></div>
+    </div>
+    <div class="stack-row">
+      <div class="layer">Network</div>
+      <div class="vendors">Palo Alto, Fortinet, Zscaler</div>
+      <div class="status"><span class="check">✓</span></div>
+    </div>
+    <div class="stack-row">
+      <div class="layer">Cloud / CSPM</div>
+      <div class="vendors">Wiz, Orca, Prisma Cloud</div>
+      <div class="status"><span class="check">✓</span></div>
+    </div>
+    <div class="stack-row">
+      <div class="layer">Application</div>
+      <div class="vendors">Snyk, Checkmarx, Veracode</div>
+      <div class="status"><span class="check">✓</span></div>
+    </div>
+    <div class="stack-row">
+      <div class="layer">Identity</div>
+      <div class="vendors">Okta, CyberArk, SailPoint</div>
+      <div class="status"><span class="check">✓</span></div>
+    </div>
+    <div class="stack-row gap-row">
+      <div class="layer">Database Layer</div>
+      <div class="vendors">No behavioral detection exists</div>
+      <div class="status">AEGIS →</div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIO -->
+<section class="scenario-section">
+  <div class="section-label">Real-World Scenario</div>
+  <h2>What this looks like in practice.</h2>
+  <p class="body-text">This is not theoretical. This pattern appears in active investigations — sanitized from production DFIR casework.</p>
+
+  <div class="scenario-box">
+    <div class="scenario-label">Sanitized from active investigation</div>
+    <p>A mid-level database administrator at a regulated financial institution begins running bulk SELECT queries against customer PII tables during off-hours. The queries are syntactically valid, use their legitimate credentials, and stay within their IAM permissions. Over six weeks, they extract 2.3 million customer records in batches sized to stay below alerting thresholds. Every EDR, SIEM, and CSPM tool in the stack reports green.</p>
+    <div class="outcome">
+      <p><strong>Without AEGIS:</strong> Detected 4 months later during a routine access review. 2.3M records exfiltrated. NYDFS 72-hour notification triggered retroactively. Estimated exposure: $11M+.</p>
+    </div>
+    <div class="outcome with-aegis">
+      <p><strong>With AEGIS:</strong> Behavioral baseline flags anomalous query volume and temporal pattern within 72 hours of first deviation. Automated alert escalates to SOC with full query timeline, affected tables, and row-count trajectory. Containment within the same week.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="product">
+  <div class="section-label">Architecture</div>
+  <h2>How AEGIS works — without touching the production path.</h2>
+  <p class="body-text">AEGIS operates as an API-native sidecar to the database engine. It observes query patterns, access metadata, and session behavior through the database platform's telemetry APIs — not by proxying or intercepting live queries. Zero latency impact on production workloads.</p>
+
+  <div class="arch-diagram">
+    <div><span class="layer-label">Application</span><span class="arrow">→</span> queries flow normally to database engine</div>
+    <div><span class="layer-label">Database Engine</span><span class="arrow">→</span> telemetry API emits access patterns, query metadata, session context</div>
+    <div><span class="layer-label">AEGIS Sidecar</span><span class="arrow">→</span> <span class="highlight">behavioral baselining</span> · anomaly scoring · <span class="warm">real-time alerting</span></div>
+    <div><span class="layer-label">Detection Engine</span><span class="arrow">→</span> multi-agent AI triage · MITRE ATT&CK mapping · forensic timeline</div>
+    <div><span class="layer-label">Output</span><span class="arrow">→</span> SOC alert · compliance evidence · automated containment via API</div>
+  </div>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="num">01 — BASELINE</div>
+      <h3>Behavioral fingerprinting</h3>
+      <p>AEGIS learns per-user and per-service-account query patterns: what tables they access, when, at what volume, with what query structures. Deviations scored against a rolling behavioral model.</p>
+    </div>
+    <div class="how-card">
+      <div class="num">02 — DETECT</div>
+      <h3>Multi-signal anomaly detection</h3>
+      <p>Credential misuse, off-hours access, unusual data volumes, bulk export patterns, privilege escalation sequences, and cross-table correlation anomalies — all scored in real time.</p>
+    </div>
+    <div class="how-card">
+      <div class="num">03 — RESPOND</div>
+      <h3>Automated triage & containment</h3>
+      <p>Multi-agent AI generates MITRE ATT&CK mappings, builds forensic timelines, and packages regulatory evidence. API-driven containment actions integrate with existing SOAR playbooks.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOR DATABASE VENDORS -->
+<section class="econ-section" id="vendors">
+  <div class="section-label">For Database Vendors</div>
+  <h2>Security should be native to the data platform — not bolted on from outside.</h2>
+  <p class="body-text">Database-layer security will follow the same pattern as TLS in web servers: what starts as a third-party add-on becomes an embedded platform capability. AEGIS is designed to be that embedded layer — creating new revenue streams for the database vendor while deepening competitive moat.</p>
+
+  <div class="econ-grid">
+    <div class="econ-column vendor">
+      <h3>Revenue Impact</h3>
+      <div class="econ-item">
+        <div class="metric">65%+</div>
+        <div class="desc">Gross margin on OEM royalty — no COGS exposure for the vendor</div>
+      </div>
+      <div class="econ-item">
+        <div class="metric">$150K–$400K</div>
+        <div class="desc">Annual DBaaS consumption pull-through per AEGIS customer</div>
+      </div>
+      <div class="econ-item">
+        <div class="metric">+15–25%</div>
+        <div class="desc">Enterprise tier pricing uplift justified by security bundle</div>
+      </div>
+    </div>
+    <div class="econ-column enterprise">
+      <h3>Competitive Moat</h3>
+      <div class="econ-item">
+        <div class="metric">Only</div>
+        <div class="desc">real-time database with embedded behavioral detection</div>
+      </div>
+      <div class="econ-item">
+        <div class="metric">Lock-in</div>
+        <div class="desc">Security becomes a switching cost — customers can't replicate it elsewhere</div>
+      </div>
+      <div class="econ-item">
+        <div class="metric">Signal</div>
+        <div class="desc">Enterprise and regulated buyers demand database-native security in RFPs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR ENTERPRISES -->
+<section class="econ-section" id="enterprises">
+  <div class="section-label">For Enterprises</div>
+  <h2>Your data is your most valuable asset. Defend it at the source.</h2>
+  <p class="body-text">If your applications process financial transactions, patient records, or classified data — and your security stack has no behavioral detection at the database layer — you have a gap that no amount of endpoint or network tooling can close.</p>
+
+  <div class="how-grid">
+    <div class="how-card">
+      <h3>Insider Threat Detection</h3>
+      <p>Behavioral baselines on every privileged user and service account. Anomalous query patterns, volume spikes, and temporal deviations flagged before damage accumulates.</p>
+    </div>
+    <div class="how-card">
+      <h3>Credential Misuse</h3>
+      <p>Detect compromised or shared credentials through behavioral fingerprinting — not just failed logins. A valid credential used abnormally triggers the same alerting as an invalid one.</p>
+    </div>
+    <div class="how-card">
+      <h3>Data Exfiltration</h3>
+      <p>Unusual access volumes, off-hours queries, export staging patterns, and systematic table scanning caught at the query layer — the earliest possible detection point.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMPLIANCE -->
+<section class="compliance-section">
+  <div class="section-label">Continuous Compliance</div>
+  <h2>Audit-ready evidence, generated continuously.</h2>
+  <p class="body-text">AEGIS automatically generates the detection evidence, access audit trails, and incident documentation required by major compliance frameworks — replacing annual audit scrambles with continuous, machine-generated proof.</p>
+
+  <div class="compliance-tags">
+    <div class="compliance-tag">NYDFS 23 NYCRR 500</div>
+    <div class="compliance-tag">SOC 2 Type II</div>
+    <div class="compliance-tag">PCI-DSS 4.0</div>
+    <div class="compliance-tag">DORA</div>
+    <div class="compliance-tag">GDPR Art. 32</div>
+    <div class="compliance-tag">ISO 27001</div>
+    <div class="compliance-tag">HIPAA</div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="founder-section" id="team">
+  <div class="section-label">Leadership</div>
+  <h2>Built from the investigation room, not the lab.</h2>
+
+  <div class="founder-card">
+    <div class="founder-avatar">OB</div>
+    <div class="founder-info">
+      <h3>Oded Blatman</h3>
+      <div class="title">Founder & CEO</div>
+      <p>CIO & CISO leading cybersecurity, technology operations, and AI governance at a NYDFS-regulated cryptocurrency custody firm serving enterprise clients across 30+ global regions. Architect of a 20-agent AI behavioral detection and DFIR investigation platform used in active threat response against organized cybercrime and criminal recruitment operations. 15+ years in regulated financial services security.</p>
+      <div class="founder-creds">
+        <div class="cred">NYDFS-regulated financial services</div>
+        <div class="cred">Active DFIR operations</div>
+        <div class="cred">Multi-agent AI systems</div>
+        <div class="cred">30+ region coverage</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="advisory-note">
+    Advisory board and design partners — to be announced. If you're a CISO, database engineering leader, or investor interested in the database security space, <a href="mailto:oded@sentrixi.com" style="color:var(--accent);text-decoration:none;">reach out</a>.
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <div class="section-label" style="justify-content:center;">Get Started</div>
+  <h2>See the gap in your stack — and close it.</h2>
+  <p class="lead">We're selectively partnering with database vendors serving security-conscious verticals, and with enterprises that need database-layer behavioral detection that doesn't exist anywhere else.</p>
+  <div class="cta-buttons">
+    <a href="mailto:oded@sentrixi.com?subject=AEGIS Technical Briefing" class="btn-primary">Request a Technical Briefing →</a>
+    <a href="mailto:oded@sentrixi.com?subject=AEGIS Sandbox Access" class="btn-outline">Request Sandbox Access</a>
+  </div>
+  <div class="cta-email">
+    <a href="mailto:oded@sentrixi.com">oded@sentrixi.com</a>
+  </div>
+</section>
+
+<footer>
+  <div class="logo" style="margin-bottom:1rem;">SENTRI<span style="color:var(--accent);">X</span>I</div>
+  © 2026 Sentrixi Ltd. All rights reserved.
+</footer>
+
+</body>
+</html>

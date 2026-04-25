@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — Forensic Investigation Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;
+  --card:#111827;--border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;
+  --blue:#3b82f6;--blue2:#60a5fa;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.06);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.06);--ambertext:#fbbf24;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}.breadcrumb span{color:var(--gray)}
+.conf-banner{padding:.5rem 1rem;background:var(--redbg);border-bottom:1px solid rgba(239,68,68,.15);font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;color:var(--redtext);letter-spacing:.06em;text-transform:uppercase;text-align:center}
+
+.page{padding:1.25rem 1.5rem;max-width:1100px;margin:0 auto}
+.sec-header{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.sec-header::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* REPORT HEADER */
+.report-header{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.5rem;margin-bottom:1rem}
+.report-org{font-size:.7rem;color:var(--muted);margin-bottom:.25rem}
+.report-title{font-size:1.4rem;font-weight:800}
+.report-id{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);margin-top:.35rem}
+
+.meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.meta-item .meta-label{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.2rem}
+.meta-item .meta-val{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:700}
+.meta-item .meta-detail{font-size:.7rem;color:var(--muted);margin-top:.1rem}
+
+/* EXECUTIVE SUMMARY */
+.summary-box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem;font-size:.85rem;color:var(--gray);line-height:1.8}
+
+/* EVIDENCE TABLE */
+.ev-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ev-table th{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:.6rem .75rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.ev-table td{font-size:.78rem;padding:.55rem .75rem;border-bottom:1px solid rgba(30,41,59,.3);vertical-align:middle}
+.ev-table tr:last-child td{border:none}
+.ev-table tr:hover{background:rgba(59,130,246,.02)}
+.sev{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;padding:.15rem .45rem;border-radius:3px;display:inline-block}
+.sev.high{background:var(--amberbg);color:var(--ambertext);border:1px solid rgba(245,158,11,.2)}
+.sev.critical{background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.2)}
+.mitre-link{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--blue2)}
+.ev-time{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+.ev-agent{font-size:.75rem;color:var(--gray)}
+.ev-event{font-size:.75rem;color:var(--gray)}
+
+/* RESPONSE TABLE */
+.resp-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:.5rem}
+.resp-table th{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:.6rem .75rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.resp-table td{font-size:.78rem;padding:.55rem .75rem;border-bottom:1px solid rgba(30,41,59,.3)}
+.resp-table tr:last-child td{border:none}
+.result{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600}
+.result.success{color:var(--greentext)}
+.result.pending{color:var(--ambertext)}
+
+/* INTEGRITY */
+.integrity-box{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;margin-top:1rem;font-family:'JetBrains Mono',monospace}
+.integrity-hash{font-size:.7rem;color:var(--muted);word-break:break-all}
+.integrity-note{font-size:.7rem;color:var(--muted);margin-top:.5rem;font-family:'Inter',sans-serif}
+
+/* FOOTER */
+.report-footer{display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.7rem;color:var(--muted)}
+.export-btns{display:flex;gap:.5rem}
+.export-btn{padding:.45rem 1rem;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--card);color:var(--white);transition:all .2s}
+.export-btn:hover{border-color:var(--blue);background:var(--bluebg)}
+.export-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.export-btn.primary:hover{background:#2563eb}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Forensic Reports <span>›</span> AEGIS-FR-2026-0422-0031</div>
+  </div>
+</div>
+<div class="conf-banner">Confidential — Forensic Investigation Report</div>
+
+<div class="page">
+  <div class="report-header">
+    <div class="report-org">Sentrixi Security Operations · AEGIS Forensic Engine</div>
+    <div class="report-title">Process compromise analysis — svchost.exe (PID 4712)</div>
+    <div class="report-id">Report ID: AEGIS-FR-2026-0422-0031 · Generated: April 22, 2026 14:35 UTC</div>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <div class="meta-label">Target Host</div>
+        <div class="meta-val" style="color:var(--white)">DVWS-PC01</div>
+        <div class="meta-detail">Windows 11 · 10.4.12.87</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Threat Classification</div>
+        <div class="meta-val" style="color:var(--redtext)">Critical — 0.96</div>
+        <div class="meta-detail">7-agent convergence</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Detection Latency</div>
+        <div class="meta-val" style="color:var(--greentext)">23ms</div>
+        <div class="meta-detail">ML brain first alert</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Time to Containment</div>
+        <div class="meta-val" style="color:var(--greentext)">1.8s</div>
+        <div class="meta-detail">Guardian auto-response</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-header">Executive Summary</div>
+  <div class="summary-box">
+    AEGIS detected a multi-stage attack chain originating from spearphishing delivery on host DVWS-PC01. The attack leveraged a macro-enabled Excel attachment to initiate a LOLBin execution chain: EXCEL.EXE → cmd.exe → mshta.exe → powershell.exe (encoded) → certutil.exe (decode). The decoded payload was injected into a legitimate svchost.exe process (PID 4712) via NtCreateThreadEx hollowing. The compromised process immediately attempted LSASS credential dumping and established DNS-based command-and-control communication using domain generation algorithm patterns at 30-second beacon intervals. Lateral movement to domain controller DVWS-DC02 was attempted via SMB with harvested credentials. AEGIS Guardian contained the endpoint within 1.8 seconds, blocking exfiltration. The attack pattern matches Scattered Spider TTPs at 84% confidence with Volt Typhoon LOTL techniques at 67%.
+  </div>
+
+  <div class="sec-header">Evidence Chain</div>
+  <table class="ev-table">
+    <thead><tr><th>Time (UTC)</th><th>Agent</th><th>Severity</th><th>Event</th><th>MITRE</th></tr></thead>
+    <tbody>
+      <tr><td class="ev-time">14:32:01.024</td><td class="ev-agent">Email threat</td><td><span class="sev high">High</span></td><td class="ev-event">Macro-enabled .xlsm attachment opened via Outlook</td><td class="mitre-link">T1566.001</td></tr>
+      <tr><td class="ev-time">14:32:01.047</td><td class="ev-agent">LOLBin chain</td><td><span class="sev critical">Critical</span></td><td class="ev-event">Anomalous process chain: EXCEL → cmd → mshta with encoded HTA</td><td class="mitre-link">T1218.005</td></tr>
+      <tr><td class="ev-time">14:32:01.164</td><td class="ev-agent">Script block</td><td><span class="sev critical">Critical</span></td><td class="ev-event">Encoded PowerShell execution with AMSI bypass attempt</td><td class="mitre-link">T1059.001</td></tr>
+      <tr><td class="ev-time">14:32:01.387</td><td class="ev-agent">Proc injection</td><td><span class="sev critical">Critical</span></td><td class="ev-event">NtCreateThreadEx hollowing — payload injected into svchost.exe</td><td class="mitre-link">T1055.012</td></tr>
+      <tr><td class="ev-time">14:32:01.410</td><td class="ev-agent">Registry persist.</td><td><span class="sev high">High</span></td><td class="ev-event">Run key created: HKCU\...\Run\svcUpdate</td><td class="mitre-link">T1547.001</td></tr>
+      <tr><td class="ev-time">14:32:01.524</td><td class="ev-agent">Memory forensics</td><td><span class="sev critical">Critical</span></td><td class="ev-event">LSASS memory access from svchost.exe PID 4712</td><td class="mitre-link">T1003.001</td></tr>
+      <tr><td class="ev-time">14:32:01.601</td><td class="ev-agent">C2 beacon</td><td><span class="sev high">High</span></td><td class="ev-event">DNS beaconing to DGA-pattern subdomains, 30s interval</td><td class="mitre-link">T1071.004</td></tr>
+      <tr><td class="ev-time">14:32:01.789</td><td class="ev-agent">Lateral graph</td><td><span class="sev high">High</span></td><td class="ev-event">SMB connection to DVWS-DC02 with harvested credentials</td><td class="mitre-link">T1021.002</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-header">Automated Response Actions</div>
+  <table class="resp-table">
+    <thead><tr><th>Time (UTC)</th><th>Action</th><th>Result</th><th>Authorized By</th></tr></thead>
+    <tbody>
+      <tr><td class="ev-time">14:32:02.847</td><td>Endpoint quarantine — DVWS-PC01</td><td><span class="result success">Success</span></td><td style="color:var(--muted);font-size:.75rem">guardian-auto (armed)</td></tr>
+      <tr><td class="ev-time">14:32:03.201</td><td>Process tree kill — PID 4712 + children</td><td><span class="result success">Success</span></td><td style="color:var(--muted);font-size:.75rem">guardian-auto (armed)</td></tr>
+      <tr><td class="ev-time">14:32:14.500</td><td>User account disable</td><td><span class="result pending">Pending approval</span></td><td style="color:var(--muted);font-size:.75rem">Requires human gate</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-header">Evidence Chain Integrity</div>
+  <div class="integrity-box">
+    <div style="font-size:.65rem;color:var(--muted);margin-bottom:.3rem">SHA-256:</div>
+    <div class="integrity-hash">e7a2f1c9d4b8e3a0f5c6d2b1a9f8e4c7d3b6a5f2e1c0d9b8a7f6e5c4d3b2a1</div>
+    <div class="integrity-note">All evidence items, agent correlations, and response actions cryptographically chained. Immutable audit trail preserved for forensic and legal proceedings.</div>
+  </div>
+
+  <div class="report-footer">
+    <div>AEGIS Forensic Engine v2.4 · Claude Opus analysis · 7 corroborating agents · Page 1 of 6 · Classification: Confidential</div>
+    <div class="export-btns">
+      <button class="export-btn primary">Export full PDF report</button>
+      <button class="export-btn">Export IOC bundle (STIX 2.1)</button>
+      <button class="export-btn">Push to Sentinel</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

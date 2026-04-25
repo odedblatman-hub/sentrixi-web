@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — Detection Agent Fleet</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;
+  --card:#111827;--border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;
+  --blue:#3b82f6;--blue2:#60a5fa;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.06);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.06);--ambertext:#fbbf24;
+  --purple:#a78bfa;--cyan:#22d3ee;--teal:#2dd4bf;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}.breadcrumb span{color:var(--gray)}
+.page{padding:1.25rem 1.5rem;max-width:1200px;margin:0 auto}
+
+.sec-header{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.sec-header::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* DOMAIN GROUP */
+.domain-group{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:.75rem;overflow:hidden}
+.domain-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.25rem;border-bottom:1px solid var(--border);cursor:pointer}
+.domain-header:hover{background:rgba(59,130,246,.02)}
+.dh-left{display:flex;align-items:center;gap:.6rem}
+.dh-dot{width:10px;height:10px;border-radius:50%}
+.dh-name{font-weight:700;font-size:.9rem}
+.dh-right{display:flex;align-items:center;gap:1.5rem}
+.dh-stat{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+.dh-stat strong{color:var(--white);font-weight:600}
+
+.agent-list{padding:0 1.25rem .5rem}
+.agent-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem .5rem;border-bottom:1px solid rgba(30,41,59,.25);font-size:.8rem}
+.agent-row:last-child{border:none}
+.agent-row:hover{background:rgba(59,130,246,.02);border-radius:4px}
+.agent-name{display:flex;align-items:center;gap:.5rem;color:var(--gray)}
+.agent-name .dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.agent-rate{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--muted)}
+
+/* AI ENGINE */
+.ai-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem}
+.ai-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.ai-card-title{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.75rem}
+.ai-row{display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid rgba(30,41,59,.3);font-size:.8rem}
+.ai-row:last-child{border:none}
+.ai-label{color:var(--gray)}
+.ai-val{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--white)}
+.ai-val.green{color:var(--greentext)}
+.ai-val.amber{color:var(--ambertext)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Detection Agent Fleet <span>›</span> 30 Agents</div>
+  </div>
+</div>
+
+<div class="page">
+  <div class="sec-header">Agent Domains</div>
+
+  <!-- IDENTITY -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--red)"></div><div class="dh-name">Identity detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>5</strong> agents</div>
+        <div class="dh-stat"><strong>3,241</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>38ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Brute force detector</div><div class="agent-rate">890/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>MFA anomaly analyzer</div><div class="agent-rate">420/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Impossible travel</div><div class="agent-rate">1,102/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Privilege escalation</div><div class="agent-rate">512/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Session hijack detector</div><div class="agent-rate">317/min</div></div>
+    </div>
+  </div>
+
+  <!-- ENDPOINT -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--blue)"></div><div class="dh-name">Endpoint detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>6</strong> agents</div>
+        <div class="dh-stat"><strong>5,102</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>29ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Process injection monitor</div><div class="agent-rate">1,340/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Script block analyzer</div><div class="agent-rate">890/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Memory forensics scanner</div><div class="agent-rate">720/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Registry persistence</div><div class="agent-rate">612/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>DLL sideload detector</div><div class="agent-rate">940/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Fileless malware detector</div><div class="agent-rate">600/min</div></div>
+    </div>
+  </div>
+
+  <!-- NETWORK -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--amber)"></div><div class="dh-name">Network detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>4</strong> agents</div>
+        <div class="dh-stat"><strong>2,890</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>44ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>C2 beacon analyzer</div><div class="agent-rate">890/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>DNS anomaly detector</div><div class="agent-rate">1,200/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Geo-impossible traffic</div><div class="agent-rate">340/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Data exfiltration monitor</div><div class="agent-rate">460/min</div></div>
+    </div>
+  </div>
+
+  <!-- CLOUD -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--purple)"></div><div class="dh-name">Cloud detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>5</strong> agents</div>
+        <div class="dh-stat"><strong>1,847</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>67ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>IAM anomaly analyzer</div><div class="agent-rate">410/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Secrets access monitor</div><div class="agent-rate">280/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>API abuse detector</div><div class="agent-rate">520/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Storage exfil monitor</div><div class="agent-rate">312/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Resource hijack detector</div><div class="agent-rate">325/min</div></div>
+    </div>
+  </div>
+
+  <!-- LOTL -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--teal)"></div><div class="dh-name">LOTL detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>4</strong> agents</div>
+        <div class="dh-stat"><strong>967</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>52ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>LOLBin chain analyzer</div><div class="agent-rate">340/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Lateral movement graph</div><div class="agent-rate">187/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>LOTAIL detector</div><div class="agent-rate">240/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>WMI/DCOM abuse monitor</div><div class="agent-rate">200/min</div></div>
+    </div>
+  </div>
+
+  <!-- APPLICATION -->
+  <div class="domain-group">
+    <div class="domain-header">
+      <div class="dh-left"><div class="dh-dot" style="background:var(--cyan)"></div><div class="dh-name">Application detection</div></div>
+      <div class="dh-right">
+        <div class="dh-stat"><strong>6</strong> agents</div>
+        <div class="dh-stat"><strong>4,210</strong> evt/min</div>
+        <div class="dh-stat">avg <strong>41ms</strong></div>
+      </div>
+    </div>
+    <div class="agent-list">
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>OAuth/token abuse</div><div class="agent-rate">780/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Shadow SaaS detector</div><div class="agent-rate">920/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Email threat analyzer</div><div class="agent-rate">1,040/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Phishing link scanner</div><div class="agent-rate">680/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>AI-generated content</div><div class="agent-rate">410/min</div></div>
+      <div class="agent-row"><div class="agent-name"><span class="dot"></span>Supply chain monitor</div><div class="agent-rate">380/min</div></div>
+    </div>
+  </div>
+
+  <!-- AI ENGINE -->
+  <div class="sec-header">AI Engine Throughput</div>
+  <div class="ai-grid">
+    <div class="ai-card">
+      <div class="ai-card-title">ML Brain (fast path)</div>
+      <div class="ai-row"><div class="ai-label">Throughput</div><div class="ai-val">12,847 evt/s</div></div>
+      <div class="ai-row"><div class="ai-label">Avg latency</div><div class="ai-val">4.2ms</div></div>
+      <div class="ai-row"><div class="ai-label">P99 latency</div><div class="ai-val">47ms</div></div>
+      <div class="ai-row"><div class="ai-label">LLM escalation rate</div><div class="ai-val">2.1%</div></div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-title">LLM Brain (deep path)</div>
+      <div class="ai-row"><div class="ai-label">Haiku triage</div><div class="ai-val">180ms avg</div></div>
+      <div class="ai-row"><div class="ai-label">Sonnet analysis</div><div class="ai-val">2.4s avg</div></div>
+      <div class="ai-row"><div class="ai-label">Opus investigation</div><div class="ai-val">8.1s avg</div></div>
+      <div class="ai-row"><div class="ai-label">Investigations/hr</div><div class="ai-val">142</div></div>
+    </div>
+    <div class="ai-card">
+      <div class="ai-card-title">Fleet Aggregate</div>
+      <div class="ai-row"><div class="ai-label">Total agents</div><div class="ai-val">30</div></div>
+      <div class="ai-row"><div class="ai-label">Online</div><div class="ai-val green">29 healthy</div></div>
+      <div class="ai-row"><div class="ai-label">Degraded</div><div class="ai-val amber">1 elevated</div></div>
+      <div class="ai-row"><div class="ai-label">Total events/24h</div><div class="ai-val">18.2M</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

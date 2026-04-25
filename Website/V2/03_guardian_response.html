@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — Guardian Response Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;
+  --card:#111827;--card2:#1a2234;
+  --border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;
+  --blue:#3b82f6;--blue2:#60a5fa;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.06);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.06);--ambertext:#fbbf24;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}.breadcrumb span{color:var(--gray)}
+.armed-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:.35rem .8rem;border-radius:6px;background:var(--amberbg);color:var(--ambertext);border:1px solid rgba(245,158,11,.25)}
+
+.page{padding:1.25rem 1.5rem;max-width:1100px;margin:0 auto}
+
+/* ALERT BANNER */
+.alert-banner{display:flex;align-items:center;gap:.75rem;padding:.75rem 1rem;background:var(--amberbg);border:1px solid rgba(245,158,11,.2);border-radius:8px;margin-bottom:1rem;font-size:.8rem;color:var(--ambertext)}
+.alert-icon{font-size:1.1rem}
+
+/* THREAT CONTEXT */
+.context-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:1rem}
+.context-label{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.1rem}
+.context-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:.75rem}
+.ctx-item .ctx-val{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700;line-height:1.2}
+.ctx-item .ctx-detail{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+.ctx-item.red .ctx-val{color:var(--redtext)}
+.ctx-item.green .ctx-val{color:var(--greentext)}
+.ctx-item.blue .ctx-val{color:var(--blue2)}
+
+/* SECTION HEADER */
+.sec-header{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:1.25rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.sec-header::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* RESPONSE ACTIONS */
+.action-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:.5rem;display:flex;align-items:center;gap:1rem;transition:border-color .2s}
+.action-card:hover{border-color:var(--border2)}
+.action-card.executed{border-left:3px solid var(--green)}
+.action-card.pending{border-left:3px solid var(--amber)}
+.action-card.ready{border-left:3px solid var(--blue)}
+
+.action-info{flex:1}
+.action-title{font-weight:600;font-size:.9rem}
+.action-desc{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+.action-tags{display:flex;gap:.35rem;margin-top:.4rem;flex-wrap:wrap}
+.a-tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:600;padding:.15rem .45rem;border-radius:3px}
+.a-tag.auto{background:var(--greenbg);color:var(--greentext);border:1px solid rgba(34,197,94,.2)}
+.a-tag.human{background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.15)}
+.a-tag.hard{background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.15)}
+
+.action-right{display:flex;flex-direction:column;align-items:center;gap:.35rem;min-width:120px}
+.toggle-track{width:48px;height:24px;border-radius:12px;background:var(--bg3);position:relative;border:1px solid var(--border2)}
+.toggle-track.on{background:rgba(34,197,94,.15);border-color:rgba(34,197,94,.3)}
+.toggle-knob{width:18px;height:18px;border-radius:50%;background:var(--muted);position:absolute;top:2px;left:3px;transition:.2s}
+.toggle-track.on .toggle-knob{left:25px;background:var(--green)}
+.armed-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+.progress-bar{width:100%;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;margin-top:.25rem}
+.progress-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.progress-fill.green{background:var(--green)}
+.progress-fill.amber{background:var(--amber)}
+
+.status-label{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600}
+.status-label.done{color:var(--greentext)}
+.status-label.pending{color:var(--ambertext)}
+.status-label.ready{color:var(--blue2)}
+
+/* AUDIT LOG */
+.audit-log{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:.75rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;line-height:2;color:var(--gray)}
+.audit-ts{color:var(--muted);margin-right:.75rem}
+.audit-src{color:var(--dim);font-size:.6rem}
+
+/* BOTTOM STATS */
+.bottom-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-top:1.25rem}
+.bstat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-align:center}
+.bstat-val{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--greentext)}
+.bstat-label{font-size:.7rem;color:var(--muted);margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Guardian <span>›</span> Response Console</div>
+  </div>
+  <div class="armed-badge">Armed — selective</div>
+</div>
+
+<div class="page">
+  <div class="alert-banner">
+    <span class="alert-icon">⚠️</span>
+    Two high-impact actions (disable user account, freeze critical transactions) require human approval regardless of confidence score. Server-side enforced.
+  </div>
+
+  <!-- THREAT CONTEXT -->
+  <div class="context-card">
+    <div class="context-label">Threat Context</div>
+    <div style="font-weight:700;font-size:1rem;margin-top:.25rem">DVWS-PC01 <span style="font-weight:400;font-size:.8rem;color:var(--muted)">· svchost.exe · PID 4712</span></div>
+    <div class="context-grid">
+      <div class="ctx-item red">
+        <div class="context-label">Threat Confidence</div>
+        <div class="ctx-val">0.96</div>
+        <div class="ctx-detail">7 agents corroborated</div>
+      </div>
+      <div class="ctx-item blue">
+        <div class="context-label">Detection → Now</div>
+        <div class="ctx-val">3.2s</div>
+        <div class="ctx-detail">Initial detection at 14:32:01.047</div>
+      </div>
+      <div class="ctx-item">
+        <div class="context-label">Target Host</div>
+        <div class="ctx-val" style="font-size:1rem">DVWS-PC01</div>
+        <div class="ctx-detail">Windows 11 · 10.4.12.87</div>
+      </div>
+      <div class="ctx-item">
+        <div class="context-label">Classification</div>
+        <div class="ctx-val" style="font-size:1rem;color:var(--redtext)">Critical</div>
+        <div class="ctx-detail">Process compromise</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESPONSE ACTIONS -->
+  <div class="sec-header">Response Actions</div>
+
+  <div class="action-card executed">
+    <div class="action-info">
+      <div class="action-title">Quarantine endpoint — DVWS-PC01</div>
+      <div class="action-desc">Isolate from network via CrowdStrike containment API</div>
+      <div class="action-tags"><span class="a-tag auto">Auto-executed</span></div>
+    </div>
+    <div class="action-right">
+      <div class="armed-label">Armed</div>
+      <div class="toggle-track on"><div class="toggle-knob"></div></div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+      <div class="status-label done">Executed · 1.8s</div>
+    </div>
+  </div>
+
+  <div class="action-card executed">
+    <div class="action-info">
+      <div class="action-title">Kill process tree — PID 4712</div>
+      <div class="action-desc">Terminate svchost.exe and all child processes via EDR</div>
+      <div class="action-tags"><span class="a-tag auto">Auto-executed</span></div>
+    </div>
+    <div class="action-right">
+      <div class="armed-label">Armed</div>
+      <div class="toggle-track on"><div class="toggle-knob"></div></div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:100%"></div></div>
+      <div class="status-label done">Executed · 2.1s</div>
+    </div>
+  </div>
+
+  <div class="action-card ready">
+    <div class="action-info">
+      <div class="action-title">Force session termination — associated user</div>
+      <div class="action-desc">Revoke all Okta/Azure AD sessions for the endpoint owner</div>
+      <div class="action-tags"><span class="a-tag auto">Auto-executable</span></div>
+    </div>
+    <div class="action-right">
+      <div class="armed-label">Armed</div>
+      <div class="toggle-track on"><div class="toggle-knob"></div></div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:60%"></div></div>
+      <div class="status-label ready">Execute</div>
+    </div>
+  </div>
+
+  <div class="action-card pending">
+    <div class="action-info">
+      <div class="action-title">Disable user account</div>
+      <div class="action-desc">Suspend user across identity provider and downstream systems</div>
+      <div class="action-tags"><span class="a-tag human">Requires human approval</span><span class="a-tag hard">Hard gate</span></div>
+    </div>
+    <div class="action-right">
+      <div class="armed-label">Armed</div>
+      <div class="toggle-track on"><div class="toggle-knob"></div></div>
+      <div class="progress-bar"><div class="progress-fill amber" style="width:0%"></div></div>
+      <div class="status-label pending">Pending approval</div>
+    </div>
+  </div>
+
+  <div class="action-card ready">
+    <div class="action-info">
+      <div class="action-title">Revoke API credentials</div>
+      <div class="action-desc">Rotate and invalidate all API keys for the compromised identity</div>
+      <div class="action-tags"><span class="a-tag auto">Auto-executable</span></div>
+    </div>
+    <div class="action-right">
+      <div class="armed-label">Armed</div>
+      <div class="toggle-track on"><div class="toggle-knob"></div></div>
+      <div class="progress-bar"><div class="progress-fill green" style="width:60%"></div></div>
+      <div class="status-label ready">Execute</div>
+    </div>
+  </div>
+
+  <!-- AUDIT LOG -->
+  <div class="sec-header">Response Audit Log</div>
+  <div class="audit-log">
+    <div><span class="audit-ts">14:32:03.201</span>Process tree killed — PID 4712 + 3 children terminated <span class="audit-src">guardian-auto</span></div>
+    <div><span class="audit-ts">14:32:02.847</span>Endpoint DVWS-PC01 quarantined — network isolated via CrowdStrike <span class="audit-src">guardian-auto</span></div>
+    <div><span class="audit-ts">14:32:01.623</span>Guardian response triggered — confidence 0.96 exceeds arm threshold <span class="audit-src">meta-orchestrator</span></div>
+    <div><span class="audit-ts">14:32:01.410</span>7-agent convergence confirmed — LOLBin chain + process injection + C2 beacon <span class="audit-src">meta-orchestrator</span></div>
+    <div><span class="audit-ts">14:32:01.047</span>Initial detection — anomalous svchost.exe child process spawning <span class="audit-src">LOTL:LOLBin-chain</span></div>
+  </div>
+
+  <!-- BOTTOM STATS -->
+  <div class="bottom-stats">
+    <div class="bstat">
+      <div class="bstat-val">23ms</div>
+      <div class="bstat-label">Detection latency</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val">1.8s</div>
+      <div class="bstat-label">Time to containment</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val">2</div>
+      <div class="bstat-label">Auto-executed actions</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val" style="color:var(--ambertext)">1</div>
+      <div class="bstat-label">Pending approval</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

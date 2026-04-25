@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 280" width="800" height="280">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5A0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0097A7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="shieldInner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5A0;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#0097A7;stop-opacity:0.05" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="280" fill="#0A0F1A"/>
+  
+  <!-- Shield icon -->
+  <g transform="translate(60, 40)">
+    <!-- Outer shield shape -->
+    <path d="M75,10 L140,35 L140,105 C140,145 110,175 75,190 C40,175 10,145 10,105 L10,35 Z" 
+          fill="none" stroke="url(#shieldGrad)" stroke-width="2.5" filter="url(#glow)"/>
+    
+    <!-- Inner shield fill -->
+    <path d="M75,18 L134,40 L134,105 C134,141 107,169 75,183 C43,169 16,141 16,105 L16,40 Z" 
+          fill="url(#shieldInner)"/>
+    
+    <!-- AI node network inside shield -->
+    <!-- Center node -->
+    <circle cx="75" cy="90" r="6" fill="#00E5A0" opacity="0.9"/>
+    <!-- Top node -->
+    <circle cx="75" cy="52" r="4" fill="#00E5A0" opacity="0.7"/>
+    <!-- Left node -->
+    <circle cx="42" cy="105" r="4" fill="#00E5A0" opacity="0.7"/>
+    <!-- Right node -->
+    <circle cx="108" cy="105" r="4" fill="#00E5A0" opacity="0.7"/>
+    <!-- Bottom left -->
+    <circle cx="55" cy="140" r="3" fill="#00E5A0" opacity="0.5"/>
+    <!-- Bottom right -->
+    <circle cx="95" cy="140" r="3" fill="#00E5A0" opacity="0.5"/>
+    
+    <!-- Connection lines -->
+    <line x1="75" y1="90" x2="75" y2="52" stroke="#00E5A0" stroke-width="1" opacity="0.4"/>
+    <line x1="75" y1="90" x2="42" y2="105" stroke="#00E5A0" stroke-width="1" opacity="0.4"/>
+    <line x1="75" y1="90" x2="108" y2="105" stroke="#00E5A0" stroke-width="1" opacity="0.4"/>
+    <line x1="75" y1="90" x2="55" y2="140" stroke="#00E5A0" stroke-width="1" opacity="0.3"/>
+    <line x1="75" y1="90" x2="95" y2="140" stroke="#00E5A0" stroke-width="1" opacity="0.3"/>
+    <line x1="42" y1="105" x2="55" y2="140" stroke="#00E5A0" stroke-width="0.8" opacity="0.25"/>
+    <line x1="108" y1="105" x2="95" y2="140" stroke="#00E5A0" stroke-width="0.8" opacity="0.25"/>
+    <line x1="75" y1="52" x2="42" y2="105" stroke="#00E5A0" stroke-width="0.8" opacity="0.25"/>
+    <line x1="75" y1="52" x2="108" y2="105" stroke="#00E5A0" stroke-width="0.8" opacity="0.25"/>
+  </g>
+  
+  <!-- AEGIS text -->
+  <text x="230" y="145" font-family="'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif" 
+        font-size="88" font-weight="600" letter-spacing="12" fill="#FFFFFF">
+    AEGIS
+  </text>
+  
+  <!-- Tagline -->
+  <text x="235" y="188" font-family="'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif" 
+        font-size="15.5" font-weight="400" letter-spacing="3.5" fill="#00E5A0" opacity="0.85">
+    AGENTIC ENTERPRISE GOVERNANCE
+  </text>
+  <text x="235" y="212" font-family="'SF Pro Display', 'Helvetica Neue', 'Segoe UI', sans-serif" 
+        font-size="15.5" font-weight="400" letter-spacing="3.5" fill="#00E5A0" opacity="0.85">
+    &amp; INFORMATION SECURITY
+  </text>
+  
+  <!-- Subtle accent line under AEGIS -->
+  <rect x="232" y="158" width="100" height="1.5" fill="url(#shieldGrad)" opacity="0.6" rx="0.75"/>
+</svg>

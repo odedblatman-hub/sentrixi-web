@@ -1,0 +1,460 @@
+
+<style>
+  :root { --navy:#0F172A; --blue:#1B4FD8; --teal:#0D9488; --slate:#475569; --light:#F1F5F9; --red:#DC2626; --amber:#D97706; --green:#059669; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font-sans); background: var(--color-background-secondary); }
+  .deck-wrap { max-width: 680px; margin: 0 auto; padding: 1rem 0; }
+  .slide-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding: 0 4px; }
+  .slide-counter { font-size: 12px; color: var(--color-text-secondary); }
+  .pill-nav { display: flex; gap: 4px; flex-wrap: wrap; }
+  .pill { font-size: 11px; padding: 3px 10px; border-radius: 20px; cursor: pointer; border: 0.5px solid var(--color-border-tertiary); background: var(--color-background-primary); color: var(--color-text-secondary); transition: all 0.15s; white-space: nowrap; }
+  .pill.active { background: var(--color-background-info); border-color: var(--color-border-info); color: var(--color-text-info); }
+  .slide { display: none; background: var(--color-background-primary); border-radius: var(--border-radius-lg); border: 0.5px solid var(--color-border-tertiary); overflow: hidden; min-height: 440px; }
+  .slide.active { display: flex; flex-direction: column; }
+  .slide-inner { padding: 36px 40px; flex: 1; display: flex; flex-direction: column; }
+  .slide-footer { border-top: 0.5px solid var(--color-border-tertiary); padding: 10px 40px; display: flex; justify-content: space-between; align-items: center; }
+  .sf-brand { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; }
+  .sf-conf { font-size: 11px; color: var(--color-text-tertiary); }
+  .slide-tag { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--color-text-success); margin-bottom: 10px; }
+  .slide-h1 { font-size: 26px; font-weight: 500; color: var(--color-text-primary); line-height: 1.15; margin-bottom: 10px; }
+  .slide-h1 em { font-style: italic; font-family: var(--font-serif); color: var(--color-text-teal, #0D9488); }
+  .slide-sub { font-size: 14px; color: var(--color-text-secondary); line-height: 1.65; margin-bottom: 24px; max-width: 560px; }
+  .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .kpi { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .kpi-n { font-size: 26px; font-weight: 500; color: var(--color-text-primary); line-height: 1; margin-bottom: 4px; }
+  .kpi-l { font-size: 11px; color: var(--color-text-secondary); line-height: 1.4; }
+  .kpi.accent { background: var(--color-background-info); }
+  .kpi.accent .kpi-n { color: var(--color-text-info); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+  .box-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .box-item { font-size: 13px; color: var(--color-text-primary); padding: 5px 0; border-bottom: 0.5px solid var(--color-border-tertiary); line-height: 1.4; display: flex; align-items: flex-start; gap: 7px; }
+  .box-item:last-child { border-bottom: none; }
+  .tick { color: #059669; font-size: 12px; margin-top: 1px; flex-shrink: 0; }
+  .cross { color: #DC2626; font-size: 12px; margin-top: 1px; flex-shrink: 0; }
+  .row-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .row-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 16px; display: flex; align-items: flex-start; gap: 12px; }
+  .ri-num { font-size: 11px; font-weight: 500; color: var(--color-text-success); min-width: 20px; margin-top: 1px; }
+  .ri-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 3px; }
+  .ri-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+  .table-wrap { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 20px; }
+  .table-wrap th { text-align: left; padding: 7px 10px; background: var(--color-background-secondary); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-secondary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .table-wrap td { padding: 8px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); color: var(--color-text-primary); vertical-align: top; }
+  .table-wrap tr:last-child td { border-bottom: none; }
+  .good-td { color: #059669 !important; font-weight: 500; }
+  .bad-td { color: #DC2626 !important; }
+  .phase-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .phase { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px; border-top: 2px solid var(--color-border-tertiary); }
+  .phase.p1 { border-top-color: #0D9488; }
+  .phase.p2 { border-top-color: #1B4FD8; }
+  .phase.p3 { border-top-color: #D97706; }
+  .ph-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .ph-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 8px; }
+  .ph-item { font-size: 12px; color: var(--color-text-secondary); padding: 3px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .ph-item:last-child { border-bottom: none; }
+  .ask-box { background: var(--color-background-info); border-radius: var(--border-radius-lg); padding: 20px 24px; margin-bottom: 20px; }
+  .ask-n { font-size: 36px; font-weight: 500; color: var(--color-text-info); line-height: 1; margin-bottom: 6px; }
+  .ask-l { font-size: 13px; color: var(--color-text-info); opacity: 0.8; }
+  .use-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .use-item { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+  .use-pct { font-size: 18px; font-weight: 500; color: var(--color-text-primary); }
+  .use-l { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; }
+  .cover-hero { text-align: center; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 0; }
+  .cover-logo { font-size: 48px; font-weight: 500; color: var(--color-text-primary); letter-spacing: -2px; margin-bottom: 6px; }
+  .cover-logo em { font-style: italic; font-family: var(--font-serif); color: #0D9488; }
+  .cover-brand { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 32px; letter-spacing: 0.06em; }
+  .cover-hl { font-size: 19px; font-weight: 500; color: var(--color-text-primary); max-width: 480px; line-height: 1.4; margin-bottom: 20px; }
+  .cover-meta { display: flex; gap: 24px; margin-top: 24px; }
+  .cover-stat { text-align: center; }
+  .cs-n { font-size: 22px; font-weight: 500; color: var(--color-text-info); }
+  .cs-l { font-size: 11px; color: var(--color-text-secondary); }
+  .dot-row { display: flex; gap: 6px; justify-content: center; margin-top: 10px; }
+  .dot-b { width: 6px; height: 6px; border-radius: 50%; background: var(--color-border-secondary); cursor: pointer; transition: background 0.15s; }
+  .dot-b.active { background: var(--color-text-info); }
+  .nav-btns { display: flex; gap: 8px; margin-top: 12px; justify-content: center; }
+  .nav-btn { font-size: 13px; padding: 6px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); cursor: pointer; }
+  .nav-btn:hover { background: var(--color-background-secondary); }
+  .timeline-row { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .tl-yr { font-size: 12px; font-weight: 500; color: #0D9488; min-width: 44px; margin-top: 1px; }
+  .tl-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 2px; }
+  .tl-body { font-size: 12px; color: var(--color-text-secondary); }
+  .tagline-strip { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 16px; text-align: center; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 16px; }
+</style>
+
+<div class="deck-wrap">
+  <div class="slide-nav">
+    <span class="slide-counter" id="counter">Slide 1 of 11</span>
+    <div class="pill-nav" id="pills"></div>
+  </div>
+
+  <div id="slides">
+
+    <!-- SLIDE 1: COVER -->
+    <div class="slide active" id="s0">
+      <div class="slide-inner">
+        <div class="cover-hero">
+          <div class="cover-logo">AEGIS <em>by</em> Sentrixi</div>
+          <div class="cover-brand">CONFIDENTIAL INVESTOR BRIEF · APRIL 2026</div>
+          <div class="cover-hl">The first fully autonomous AI security platform — replacing the SOC team, not augmenting it.</div>
+          <div class="tagline-strip">Autonomous · Expert · Always Ahead</div>
+          <div class="cover-meta">
+            <div class="cover-stat"><div class="cs-n">60+</div><div class="cs-l">AI specialist agents</div></div>
+            <div class="cover-stat"><div class="cs-n">&lt;500ms</div><div class="cs-l">detect to contain</div></div>
+            <div class="cover-stat"><div class="cs-n">18mo</div><div class="cs-l">zero incidents missed</div></div>
+            <div class="cover-stat"><div class="cs-n">120+</div><div class="cs-l">live capabilities</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-tertiary);text-align:center;margin-top:16px;">Oded Blatman · Founder &amp; CEO · oded@guardrix.com · +972-52-299-2014</div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential — Not for distribution</span></div>
+    </div>
+
+    <!-- SLIDE 2: PROBLEM -->
+    <div class="slide" id="s1">
+      <div class="slide-inner">
+        <div class="slide-tag">The problem</div>
+        <div class="slide-h1">Attackers run at machine speed.<br/>Every SOC still runs on <em>human time.</em></div>
+        <div class="slide-sub">The cybersecurity industry has a structural failure — not a talent failure. You cannot hire your way out of a machine-speed problem.</div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-n" style="color:#DC2626">197 days</div><div class="kpi-l">Mean time to detect a breach (IBM 2025)</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:#DC2626">$4.9M</div><div class="kpi-l">Average cost of a data breach (IBM 2025)</div></div>
+          <div class="kpi"><div class="kpi-n" style="color:#DC2626">3.4M</div><div class="kpi-l">Global cybersecurity talent shortage</div></div>
+        </div>
+        <div class="two-col">
+          <div class="box">
+            <div class="box-label">Old SOC model — broken</div>
+            <div class="box-item"><span class="cross">✕</span>Analysts review &lt;12% of alerts</div>
+            <div class="box-item"><span class="cross">✕</span>45–65% false positive rate</div>
+            <div class="box-item"><span class="cross">✕</span>Coverage gaps on nights/weekends</div>
+            <div class="box-item"><span class="cross">✕</span>$1M–$5M/year in headcount</div>
+            <div class="box-item"><span class="cross">✕</span>18+ months to build internally</div>
+          </div>
+          <div class="box">
+            <div class="box-label">What enterprises actually need</div>
+            <div class="box-item"><span class="tick">✓</span>24/7 coverage, machine-speed detection</div>
+            <div class="box-item"><span class="tick">✓</span>Deep expertise across every threat surface</div>
+            <div class="box-item"><span class="tick">✓</span>Autonomous containment, no analyst required</div>
+            <div class="box-item"><span class="tick">✓</span>Predictable cost, infinite scale</div>
+            <div class="box-item"><span class="tick">✓</span>Continuous learning — gets better over time</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 3: SOLUTION -->
+    <div class="slide" id="s2">
+      <div class="slide-inner">
+        <div class="slide-tag">The solution</div>
+        <div class="slide-h1">60+ AI specialist agents. One platform.<br/><em>Zero analysts required.</em></div>
+        <div class="slide-sub">AEGIS replaces the SOC — not with a single AI, but with a coordinated fleet of domain-expert agents, each trained on its specific threat surface, working in concert 24/7.</div>
+        <div class="row-list">
+          <div class="row-item">
+            <div class="ri-num">01</div>
+            <div><div class="ri-title">Dual-brain detection architecture</div><div class="ri-body">Fast ML heuristic path (&lt;500ms) + Claude LLM deep analysis. Every event is scored, escalated, and acted upon without human intervention.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">02</div>
+            <div><div class="ri-title">60+ specialist agents across every domain</div><div class="ri-body">Identity, endpoint, network, cloud, email, insider threat, LOTL, kill chain, on-chain intelligence, APT campaign tracking — each a domain PhD, not a generalist.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">03</div>
+            <div><div class="ri-title">Self-learning flywheel</div><div class="ri-body">Online learner + federated learning + AutoML pipeline. Continuously retrains on new attack vectors. Every customer environment makes the platform smarter.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">04</div>
+            <div><div class="ri-title">Autonomous containment (Guardian)</div><div class="ri-body">Detects, investigates, and contains — autonomously. The human reviews the report after the threat is neutralized, not before.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 4: TRACTION -->
+    <div class="slide" id="s3">
+      <div class="slide-inner">
+        <div class="slide-tag">Traction</div>
+        <div class="slide-h1">18 months production.<br/><em>Zero critical incidents missed.</em></div>
+        <div class="slide-sub">AEGIS is not a prototype. It was built and battle-tested as the autonomous SOC platform at Fireblocks — one of the world's most targeted fintech companies, operating under NYDFS 23 NYCRR 500 oversight.</div>
+        <div class="kpi-row">
+          <div class="kpi accent"><div class="kpi-n">0</div><div class="kpi-l">Critical incidents missed in 18 months of production</div></div>
+          <div class="kpi"><div class="kpi-n">900+</div><div class="kpi-l">Employees protected across 30+ global regions</div></div>
+          <div class="kpi"><div class="kpi-n">120+</div><div class="kpi-l">Live platform capabilities verified from codebase</div></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-n">60+</div><div class="kpi-l">AI specialist agents, all in production</div></div>
+          <div class="kpi"><div class="kpi-n">&lt;500ms</div><div class="kpi-l">Detect-to-contain time (ransomware scenario)</div></div>
+          <div class="kpi"><div class="kpi-n">112</div><div class="kpi-l">Test files validating platform integrity</div></div>
+        </div>
+        <div class="box" style="margin-top:4px;">
+          <div class="box-label">Why this is a structural advantage</div>
+          <div class="box-item"><span class="tick">✓</span>Most AI security startups are training on simulated data. AEGIS trained on 18 months of real, nation-state-level threat telemetry.</div>
+          <div class="box-item"><span class="tick">✓</span>Named threat actor playbooks: Lazarus, Volt Typhoon, Scattered Spider, APT41 — built from live intelligence.</div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 5: MARKET -->
+    <div class="slide" id="s4">
+      <div class="slide-inner">
+        <div class="slide-tag">Market opportunity</div>
+        <div class="slide-h1">A $78B market at the exact<br/><em>moment of disruption.</em></div>
+        <div class="slide-sub">AI is collapsing the SOC model. Every CISO is under board pressure to do more with less. The question is not whether autonomous security wins — it's who builds the category.</div>
+        <div class="kpi-row">
+          <div class="kpi accent"><div class="kpi-n">$78B</div><div class="kpi-l">Global SOC / MSSP market by 2029 (MarketsandMarkets)</div></div>
+          <div class="kpi"><div class="kpi-n">$22B</div><div class="kpi-l">AI in cybersecurity market by 2028 (CAGR 23%)</div></div>
+          <div class="kpi"><div class="kpi-n">$8B</div><div class="kpi-l">UEBA market by 2027 — AEGIS's initial beachhead</div></div>
+        </div>
+        <div class="two-col">
+          <div class="box">
+            <div class="box-label">Primary targets (Direct SOC)</div>
+            <div class="box-item"><span class="tick">✓</span>Finance &amp; crypto (highest threat density)</div>
+            <div class="box-item"><span class="tick">✓</span>Healthcare (HIPAA, insider threat)</div>
+            <div class="box-item"><span class="tick">✓</span>Defence &amp; government (nation-state focus)</div>
+            <div class="box-item"><span class="tick">✓</span>Mid-market 500–10K employees (no SOC budget)</div>
+          </div>
+          <div class="box">
+            <div class="box-label">Platform play (B2B2C multiplier)</div>
+            <div class="box-item"><span class="tick">✓</span>Database vendors (SingleStore, MongoDB)</div>
+            <div class="box-item"><span class="tick">✓</span>SaaS infrastructure platforms</div>
+            <div class="box-item"><span class="tick">✓</span>Cloud providers &amp; MSSPs (white-label)</div>
+            <div class="box-item"><span class="tick">✓</span>PE portfolio-wide security rollouts</div>
+          </div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 6: DIFFERENTIATION -->
+    <div class="slide" id="s5">
+      <div class="slide-inner">
+        <div class="slide-tag">Competitive moat</div>
+        <div class="slide-h1">Why AEGIS wins —<br/>and why it's <em>hard to copy.</em></div>
+        <table class="table-wrap">
+          <thead>
+            <tr>
+              <th>Capability</th>
+              <th>Legacy SIEM (Splunk, Sentinel)</th>
+              <th>AI point tools (Darktrace, Vectra)</th>
+              <th style="color:#0D9488">AEGIS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Autonomous containment</td><td class="bad-td">✕</td><td class="bad-td">Partial</td><td class="good-td">Full Guardian</td></tr>
+            <tr><td>Self-learning flywheel</td><td class="bad-td">Manual rules</td><td class="bad-td">Single model</td><td class="good-td">Federated + online ML</td></tr>
+            <tr><td>Specialist agent depth</td><td class="bad-td">Generalist</td><td class="bad-td">Network/identity only</td><td class="good-td">60+ domain agents</td></tr>
+            <tr><td>Named APT playbooks</td><td class="bad-td">✕</td><td class="bad-td">✕</td><td class="good-td">Lazarus, Volt Typhoon, Scattered Spider</td></tr>
+            <tr><td>LOTL detection</td><td class="bad-td">✕</td><td class="bad-td">Partial</td><td class="good-td">Behavioral sequence engine</td></tr>
+            <tr><td>Crypto / on-chain intelligence</td><td class="bad-td">✕</td><td class="bad-td">✕</td><td class="good-td">Chainalysis + MPC anomalies</td></tr>
+            <tr><td>White-label / OEM</td><td class="bad-td">✕</td><td class="bad-td">✕</td><td class="good-td">Built for it</td></tr>
+            <tr><td>Forensic AI (pre-computed DFIR)</td><td class="bad-td">Manual</td><td class="bad-td">Alert only</td><td class="good-td">Forensic Genie (Claude Opus)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 7: BUSINESS MODEL -->
+    <div class="slide" id="s6">
+      <div class="slide-inner">
+        <div class="slide-tag">Business model</div>
+        <div class="slide-h1">Two GTM motions.<br/><em>Compounding revenue.</em></div>
+        <div class="slide-sub">Direct SaaS + Platform licensing creates two parallel growth engines with very different margin profiles and expansion mechanics.</div>
+        <div class="two-col">
+          <div class="box">
+            <div class="box-label" style="color:#0D9488">Motion 1 — Direct SOC replacement</div>
+            <div class="box-item"><span class="tick">✓</span>Annual SaaS subscription</div>
+            <div class="box-item"><span class="tick">✓</span>Pricing: $150K–$500K/year per enterprise</div>
+            <div class="box-item"><span class="tick">✓</span>Target: CISOs, 500–50K employee companies</div>
+            <div class="box-item"><span class="tick">✓</span>vs. $1M–$5M/year SOC alternative</div>
+            <div class="box-item"><span class="tick">✓</span>NRR expansion: add verticals, users, agents</div>
+          </div>
+          <div class="box">
+            <div class="box-label" style="color:#1B4FD8">Motion 2 — Platform / OEM</div>
+            <div class="box-item"><span class="tick">✓</span>White-label AEGIS into SaaS/DB platforms</div>
+            <div class="box-item"><span class="tick">✓</span>Revenue share on customer upsells (40%)</div>
+            <div class="box-item"><span class="tick">✓</span>Anchor: SingleStore / Helios DBaaS pilot</div>
+            <div class="box-item"><span class="tick">✓</span>Vector Capital portfolio: 20+ immediate targets</div>
+            <div class="box-item"><span class="tick">✓</span>OEM licensing: $300K+/year per platform partner</div>
+          </div>
+        </div>
+        <div class="kpi-row" style="margin-top:4px;">
+          <div class="kpi"><div class="kpi-n">73%</div><div class="kpi-l">Gross margin target (SaaS)</div></div>
+          <div class="kpi"><div class="kpi-n">&lt;6mo</div><div class="kpi-l">Customer payback period</div></div>
+          <div class="kpi accent"><div class="kpi-n">$3M</div><div class="kpi-l">ARR target by month 18</div></div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 8: GO-TO-MARKET -->
+    <div class="slide" id="s7">
+      <div class="slide-inner">
+        <div class="slide-tag">Go-to-market</div>
+        <div class="slide-h1">Three phases.<br/><em>Revenue from day one.</em></div>
+        <div class="phase-row">
+          <div class="phase p1">
+            <div class="ph-label" style="color:#0D9488">Phase 1 · Mo 0–6</div>
+            <div class="ph-title">Proof of Value</div>
+            <div class="ph-item">SingleStore pilot ($150K dev contract)</div>
+            <div class="ph-item">2–3 enterprise pilot customers</div>
+            <div class="ph-item">Founder-led sales, CISO outreach</div>
+            <div class="ph-item">Website + live demo launch</div>
+            <div class="ph-item" style="font-weight:500;color:#0D9488">Target: $500K ARR</div>
+          </div>
+          <div class="phase p2">
+            <div class="ph-label" style="color:#1B4FD8">Phase 2 · Mo 6–18</div>
+            <div class="ph-title">Commercial Launch</div>
+            <div class="ph-item">White-label SingleStore Security Suite</div>
+            <div class="ph-item">15–20 enterprise customers</div>
+            <div class="ph-item">Partner program: MSSP + tech partners</div>
+            <div class="ph-item">Gartner / Forrester analyst coverage</div>
+            <div class="ph-item" style="font-weight:500;color:#1B4FD8">Target: $3M ARR</div>
+          </div>
+          <div class="phase p3">
+            <div class="ph-label" style="color:#D97706">Phase 3 · Mo 18+</div>
+            <div class="ph-title">Scale or Exit</div>
+            <div class="ph-item">Series A raise / strategic acquisition</div>
+            <div class="ph-item">International: UK, DACH, APAC</div>
+            <div class="ph-item">Vector portfolio-wide rollout</div>
+            <div class="ph-item">Vertical campaigns: defence, healthcare</div>
+            <div class="ph-item" style="font-weight:500;color:#D97706">Target: $10M+ ARR</div>
+          </div>
+        </div>
+        <div class="box">
+          <div class="box-label">Immediate pipeline</div>
+          <div class="box-item"><span class="tick">✓</span>SingleStore / Vector Capital — $150K Phase 1 contract in term sheet discussion</div>
+          <div class="box-item"><span class="tick">✓</span>Israeli security ecosystem — 200-name CISO outreach list ready to activate</div>
+          <div class="box-item"><span class="tick">✓</span>Vector portfolio — 20+ companies as immediate white-label targets</div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 9: TEAM -->
+    <div class="slide" id="s8">
+      <div class="slide-inner">
+        <div class="slide-tag">Team</div>
+        <div class="slide-h1">Built by someone who<br/><em>lived the problem for 30 years.</em></div>
+        <div class="box" style="margin-bottom:16px;">
+          <div class="box-label">Oded Blatman — Founder &amp; CEO</div>
+          <div class="box-item"><span class="tick">✓</span>30 years security/infrastructure leadership across enterprise, government, and regulated finance</div>
+          <div class="box-item"><span class="tick">✓</span>CIO &amp; CISO, Fireblocks — built AEGIS from scratch under NYDFS 23 NYCRR 500 oversight</div>
+          <div class="box-item"><span class="tick">✓</span>Previous: Led 120-person security engineering org protecting 2M+ endpoints across 40 countries</div>
+          <div class="box-item"><span class="tick">✓</span>Deep network in Israeli security ecosystem for team building and BD</div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="box-label" style="margin-bottom:8px;">Career timeline</div>
+          <div class="timeline-row"><div class="tl-yr">1995</div><div><div class="tl-title">Enterprise security foundations</div><div class="tl-body">25+ years building across enterprise, government, regulated financial services globally</div></div></div>
+          <div class="timeline-row"><div class="tl-yr">2012</div><div><div class="tl-title">CTO, Enterprise Security Division</div><div class="tl-body">120-person security engineering org · behavioral analytics protecting 2M+ endpoints · 40 countries</div></div></div>
+          <div class="timeline-row"><div class="tl-yr">2019</div><div><div class="tl-title">CIO &amp; CISO, Fireblocks</div><div class="tl-body">Built AEGIS autonomous SOC platform from scratch · NYDFS 23 NYCRR 500 regulatory environment</div></div></div>
+          <div class="timeline-row"><div class="tl-yr">2024</div><div><div class="tl-title">AEGIS reaches production</div><div class="tl-body">30 specialist agents live · 900+ employees · 30+ global regions · 18 months zero critical incidents</div></div></div>
+          <div class="timeline-row" style="border-bottom:none;"><div class="tl-yr">2026</div><div><div class="tl-title">Founded Sentrixi</div><div class="tl-body">Spinning out AEGIS as the first fully autonomous SOC platform for enterprise</div></div></div>
+        </div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 10: ASK -->
+    <div class="slide" id="s9">
+      <div class="slide-inner">
+        <div class="slide-tag">The ask</div>
+        <div class="slide-h1">Seed round.<br/><em>Structured for maximum optionality.</em></div>
+        <div class="ask-box">
+          <div class="ask-n">$2.5M</div>
+          <div class="ask-l">Seed round · 18-month runway to $3M ARR and Series A</div>
+        </div>
+        <div class="use-row" style="margin-bottom:16px;">
+          <div class="use-item"><div class="use-pct">40%</div><div class="use-l">Core platform — CTO hire + 2 engineers, cloud infra scale</div></div>
+          <div class="use-item"><div class="use-pct">25%</div><div class="use-l">Go-to-market — 2 enterprise AEs, CISO event presence</div></div>
+          <div class="use-item"><div class="use-pct">20%</div><div class="use-l">Product — agent expansion (defence/healthcare verticals)</div></div>
+          <div class="use-item"><div class="use-pct">15%</div><div class="use-l">Ops + legal + brand launch (sentrixi.com)</div></div>
+        </div>
+        <div class="box">
+          <div class="box-label">What you get at $3M ARR (Month 18)</div>
+          <div class="box-item"><span class="tick">✓</span>Series A at 8–12× ARR ($24M–$36M pre-money) — standard for AI security category leaders</div>
+          <div class="box-item"><span class="tick">✓</span>Strategic acquisition optionality: database vendor, large MSSP, or PE roll-up at $10–15M</div>
+          <div class="box-item"><span class="tick">✓</span>Gartner Cool Vendor recognition and Forrester Wave inclusion</div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);margin-top:14px;">Oded Blatman · oded@guardrix.com · +972-52-299-2014 · linkedin.com/in/oded-blatman</div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+    <!-- SLIDE 11: DATABASE VENDOR -->
+    <div class="slide" id="s10">
+      <div class="slide-inner">
+        <div class="slide-tag">For database vendors &amp; platform partners</div>
+        <div class="slide-h1">Turn security compliance<br/>into <em>a revenue line.</em></div>
+        <div class="slide-sub">Enterprise database deals are being lost to security questionnaires. AEGIS lets you ship security as a product feature — not a gap.</div>
+        <div class="row-list" style="margin-bottom:16px;">
+          <div class="row-item">
+            <div class="ri-num">01</div>
+            <div><div class="ri-title">Win the deals you're currently losing</div><div class="ri-body">SOC2, ISO27001, FedRAMP compliance automation built in. White-label AEGIS and pass every security questionnaire — before your competitor does.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">02</div>
+            <div><div class="ri-title">New revenue line: Security Suite upsell</div><div class="ri-body">Bundle AEGIS as "[YourPlatform] Security Suite." $300K/year licensing + 40% revenue share on customer upsells. Margin-accretive from day one.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">03</div>
+            <div><div class="ri-title">UBA: your customers' usage patterns = your cost intelligence</div><div class="ri-body">User behavior analytics on your own platform identifies cost optimization opportunities and churn signals — not just threats. Security data becomes product intelligence.</div></div>
+          </div>
+          <div class="row-item">
+            <div class="ri-num">04</div>
+            <div><div class="ri-title">The partnership model</div><div class="ri-body">Phase 1: $150K development contract, custom integration. Phase 2: $300K/year white-label license + revenue share. Phase 3: strategic acquisition at $10–15M.</div></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--color-text-secondary);text-align:center;">Built for SingleStore · Extensible to any database or SaaS infrastructure platform</div>
+      </div>
+      <div class="slide-footer"><span class="sf-brand">AEGIS by Sentrixi</span><span class="sf-conf">Confidential</span></div>
+    </div>
+
+  </div>
+
+  <div class="dot-row" id="dots"></div>
+  <div class="nav-btns">
+    <button class="nav-btn" onclick="go(-1)">← Prev</button>
+    <button class="nav-btn" onclick="go(1)">Next →</button>
+  </div>
+</div>
+
+<script>
+const LABELS = ["Cover","Problem","Solution","Traction","Market","Moat","Model","GTM","Team","Ask","Platforms"];
+let cur = 0;
+const slides = document.querySelectorAll('.slide');
+const dots = document.getElementById('dots');
+const pills = document.getElementById('pills');
+const counter = document.getElementById('counter');
+
+LABELS.forEach((l, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot-b' + (i===0?' active':'');
+  d.onclick = () => goTo(i);
+  dots.appendChild(d);
+  const p = document.createElement('div');
+  p.className = 'pill' + (i===0?' active':'');
+  p.textContent = l;
+  p.onclick = () => goTo(i);
+  pills.appendChild(p);
+});
+
+function goTo(n) {
+  slides[cur].classList.remove('active');
+  dots.children[cur].classList.remove('active');
+  pills.children[cur].classList.remove('active');
+  cur = (n + slides.length) % slides.length;
+  slides[cur].classList.add('active');
+  dots.children[cur].classList.add('active');
+  pills.children[cur].classList.add('active');
+  counter.textContent = 'Slide ' + (cur+1) + ' of ' + slides.length;
+}
+
+function go(d) { goTo(cur + d); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft') go(-1);
+});
+</script>

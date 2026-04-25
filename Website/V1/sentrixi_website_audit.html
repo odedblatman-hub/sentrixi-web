@@ -1,0 +1,201 @@
+
+<style>
+  .audit-wrap { padding: 1rem 0; font-family: var(--font-sans); }
+  .score-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .overall-score { display: flex; align-items: center; gap: 12px; }
+  .score-circle { width: 64px; height: 64px; border-radius: 50%; background: var(--color-background-info); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .score-n { font-size: 20px; font-weight: 500; color: var(--color-text-info); line-height: 1; }
+  .score-d { font-size: 11px; color: var(--color-text-secondary); }
+  .score-meta h2 { font-size: 16px; font-weight: 500; margin: 0 0 4px; color: var(--color-text-primary); }
+  .score-meta p { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  .legend { display: flex; gap: 16px; }
+  .leg { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--color-text-secondary); }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-pass { background: #1D9E75; }
+  .dot-warn { background: #BA7517; }
+  .dot-fail { background: #A32D2D; }
+  .section { margin-bottom: 1rem; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+  .sec-head { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--color-background-secondary); cursor: pointer; user-select: none; }
+  .sec-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+  .sec-badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+  .badge-pass { background: #E1F5EE; color: #0F6E56; }
+  .badge-warn { background: #FAEEDA; color: #854F0B; }
+  .badge-fail { background: #FCEBEB; color: #A32D2D; }
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar-bg { width: 80px; height: 6px; background: var(--color-background-primary); border-radius: 3px; border: 0.5px solid var(--color-border-tertiary); }
+  .bar-fill { height: 100%; border-radius: 3px; }
+  .fill-pass { background: #1D9E75; }
+  .fill-warn { background: #BA7517; }
+  .fill-fail { background: #A32D2D; }
+  .bar-pct { font-size: 12px; color: var(--color-text-secondary); min-width: 32px; text-align: right; }
+  .sec-body { display: none; padding: 12px 14px; border-top: 0.5px solid var(--color-border-tertiary); }
+  .sec-body.open { display: block; }
+  .item { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .item:last-child { border-bottom: none; }
+  .item-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .item-text { font-size: 13px; color: var(--color-text-primary); line-height: 1.5; }
+  .item-note { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .chevron { font-size: 11px; color: var(--color-text-secondary); transition: transform 0.2s; }
+  .chevron.open { transform: rotate(180deg); }
+</style>
+
+<div class="audit-wrap">
+  <div class="score-header">
+    <div class="overall-score">
+      <div class="score-circle">
+        <span class="score-n">78</span>
+        <span class="score-d">/100</span>
+      </div>
+      <div class="score-meta">
+        <h2>Website CMO alignment score</h2>
+        <p>Strong foundation — 4 critical gaps to fix before investor pitches</p>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="leg"><div class="dot dot-pass"></div> Aligned</div>
+      <div class="leg"><div class="dot dot-warn"></div> Partial</div>
+      <div class="leg"><div class="dot dot-fail"></div> Missing</div>
+    </div>
+  </div>
+
+  <div id="sections"></div>
+</div>
+
+<script>
+const sections = [
+  {
+    title: "Hero headline & tagline",
+    score: 95,
+    status: "pass",
+    items: [
+      { status: "pass", text: "Variant B headline matches CMO primary recommendation exactly", note: '"Your Entire Security Team. In a Single Platform. Always On." — word for word.' },
+      { status: "pass", text: "Tagline matches: Autonomous · Expert · Always Ahead", note: "Live in footer and hero. Perfect." },
+      { status: "pass", text: "A/B headline testing already wired", note: "sessionStorage variant split + GA4 event tracking. Smart." },
+      { status: "warn", text: "Variant A headline is weaker", note: '"Threats move fast. Sentrixi moves faster." — generic. Replace with the military-grade / machine-speed framing from the strategy doc.' },
+    ]
+  },
+  {
+    title: "Agent count — critical inconsistency",
+    score: 30,
+    status: "fail",
+    items: [
+      { status: "fail", text: "Website claims 30 agents — UBA platform has 60+", note: 'Hero copy says "30 specialist AI agents." Strategy doc says 60+. UBA inventory confirms 25 general agents + 5 insider threat agents + Kill Chain + LOTL + sub-agents. This is your biggest competitive differentiator being undersold by half.' },
+      { status: "fail", text: "Constellation shows 16 nodes, agent grid shows 8 named agents", note: "Sentinel, Cognito, Nexus, Lex, Argus, Atlas, Nimbus, Oracle — these are marketing names not mapped to the real agent architecture. Fine for UX, but the count must be 60+." },
+      { status: "warn", text: "120+ capabilities claim is accurate and should be louder", note: "Matches UBA inventory exactly. But it's buried in the hero sub-copy." },
+    ]
+  },
+  {
+    title: "Narrative structure (4-act story)",
+    score: 85,
+    status: "pass",
+    items: [
+      { status: "pass", text: "Act 1 (Problem) — present and visceral", note: "197-day dwell time stat, red-background section creates emotional urgency." },
+      { status: "pass", text: "Act 3 (Breakthrough) — live incident simulation is perfect", note: "487ms ransomware containment demo is exactly what the strategy called for. Highest-impact element on the page." },
+      { status: "warn", text: "Act 2 (Failed Fix) section exists but is light", note: "The red pain section shows stats but doesn't explicitly say 'you hired analysts, bought tools, wrote playbooks — still breached.' That line should be explicit." },
+      { status: "warn", text: "Act 4 (New World) is implied, not stated", note: "The resolution panel shows 0 analysts, 0 breaches — but the 'new world' narrative vision isn't explicit enough." },
+    ]
+  },
+  {
+    title: "Old SOC vs. AEGIS contrast",
+    score: 80,
+    status: "pass",
+    items: [
+      { status: "pass", text: "Before/After grid is present with real metrics", note: "197 days vs 487ms, $2.1M savings, 73% cost reduction — strong." },
+      { status: "warn", text: "Dedicated comparison page missing", note: "Strategy called for a full standalone page. Currently just a section. For investor demos, a dedicated /compare page converts better." },
+      { status: "pass", text: "Audience-tabbed metrics (CISO / CEO / CFO) is excellent", note: "The tab switcher with different ROI metrics per persona is exactly right for multiple buyer types." },
+    ]
+  },
+  {
+    title: "Platform / embed GTM motion",
+    score: 25,
+    status: "fail",
+    items: [
+      { status: "fail", text: "Motion 2 (Security as a Feature / SingleStore play) is almost invisible", note: "The entire database vendor / white-label angle is absent from the homepage. This is the highest-value GTM motion for investor storytelling — it shows a B2B2C multiplier." },
+      { status: "fail", text: "No platform/OEM section on homepage", note: "Strategy called for: 'Embed enterprise-grade security directly into your platform. White-label AEGIS and ship security as a feature.' Not on the site." },
+      { status: "warn", text: "Platform page exists but is generic", note: "The Platform nav page covers capabilities but not the OEM/embed commercial model. Add a 'For Platform Teams' section." },
+    ]
+  },
+  {
+    title: "Named threat actor / advanced capability depth",
+    score: 40,
+    status: "fail",
+    items: [
+      { status: "fail", text: "Lazarus, Volt Typhoon, Scattered Spider not mentioned", note: "Named threat actor playbooks are a massive differentiator — especially for defence/finance buyers and investors. Not on the site anywhere." },
+      { status: "fail", text: "LOTL detection, Kill Chain Engine absent from website", note: "Two of the most technically differentiated capabilities. LOTL is in the UBA inventory as production-grade. Should be featured on the product page." },
+      { status: "warn", text: "On-chain / crypto intelligence not mentioned", note: "Chainalysis/Elliptic integration, mixer detection, MPC ceremony anomalies — this is what makes AEGIS unique in fintech/crypto. Missing." },
+      { status: "pass", text: "Forensic Genie is featured correctly", note: "Good call putting this in the features grid with the Claude Opus detail. Investors will ask about it." },
+    ]
+  },
+  {
+    title: "Investor / VC readiness signals",
+    score: 50,
+    status: "warn",
+    items: [
+      { status: "pass", text: "Contact form has 'Board member / Investor' role option", note: "Good. Shows awareness of investor audience." },
+      { status: "warn", text: "No investor page or /investors route", note: "VCs and PEs want a lightweight investor landing page: traction, TAM, ask, founder credibility. Add it." },
+      { status: "fail", text: "The 'Production · Tier-1 Financial Institution' badge needs validation", note: "If this isn't a paying customer, this is the first thing a VC will challenge. If it is Fireblocks, name it (or get permission). Ambiguous social proof is worse than no social proof." },
+      { status: "warn", text: "TAM / market size not on the site", note: "The $50B+ UEBA/AI-SOC market isn't referenced. Investors want to see you understand the size of the prize." },
+    ]
+  },
+  {
+    title: "Founder credibility & About page",
+    score: 90,
+    status: "pass",
+    items: [
+      { status: "pass", text: "Timeline is authentic and specific — rare and powerful", note: "1995 → 2012 → 2019 → 2024 → 2026 with real role names and outcomes. This is exactly the founder story VCs want." },
+      { status: "pass", text: "Zero-incidents-in-18-months claim is the killer stat", note: '"18 months of zero critical incidents missed" is extraordinary social proof. It should be on the homepage, not buried on /about.' },
+      { status: "pass", text: "Quote at bottom of About page is quotable", note: '"Security operations should be a capability, not a headcount problem." — use this as a pull quote across all pitch materials.' },
+      { status: "warn", text: "Move the 18-month zero-incident stat to homepage hero", note: "This is more powerful than any number on the page right now." },
+    ]
+  },
+];
+
+const container = document.getElementById('sections');
+
+sections.forEach((sec, i) => {
+  const statusClass = sec.status === 'pass' ? 'pass' : sec.status === 'fail' ? 'fail' : 'warn';
+  const label = sec.status === 'pass' ? 'Aligned' : sec.status === 'fail' ? 'Critical gap' : 'Partial';
+  const fillClass = 'fill-' + statusClass;
+
+  const div = document.createElement('div');
+  div.className = 'section';
+  div.innerHTML = `
+    <div class="sec-head" onclick="toggle(${i})">
+      <div class="sec-title">
+        <div class="dot dot-${statusClass}"></div>
+        ${sec.title}
+        <span class="sec-badge badge-${statusClass}">${label}</span>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-bg"><div class="bar-fill ${fillClass}" style="width:${sec.score}%"></div></div>
+        <span class="bar-pct">${sec.score}%</span>
+        <span class="chevron" id="chev-${i}">▼</span>
+      </div>
+    </div>
+    <div class="sec-body" id="body-${i}">
+      ${sec.items.map(item => `
+        <div class="item">
+          <div class="item-dot dot-${item.status}"></div>
+          <div>
+            <div class="item-text">${item.text}</div>
+            <div class="item-note">${item.note}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  container.appendChild(div);
+});
+
+function toggle(i) {
+  const body = document.getElementById('body-' + i);
+  const chev = document.getElementById('chev-' + i);
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  chev.classList.toggle('open', !open);
+}
+
+toggle(1);
+toggle(4);
+toggle(5);
+</script>

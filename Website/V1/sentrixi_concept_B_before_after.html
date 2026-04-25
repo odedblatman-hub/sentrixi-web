@@ -1,0 +1,253 @@
+
+<h2 class="sr-only">Sentrixi website concept B — The Contrast: side-by-side old SOC vs Sentrixi with audience ROI calculator</h2>
+
+<style>
+.bwrap { font-family: var(--font-sans); width: 100%; }
+.bconcept-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--color-text-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md); padding: 4px 10px;
+  display: inline-block; margin-bottom: 12px;
+}
+.bhero {
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg); overflow: hidden;
+}
+.bnav {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px; border-bottom: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+}
+.bnav-logo { font-size: 14px; font-weight: 500; color: var(--color-text-primary); display:flex;align-items:center;gap:7px; }
+.bnav-sq { width:20px;height:20px;border-radius:4px;background:var(--color-background-info);display:flex;align-items:center;justify-content:center; }
+.bnav-sq-in { width:7px;height:7px;border-radius:50%;background:var(--color-text-info); }
+.bnav-links { display:flex;gap:16px; }
+.bnav-link { font-size:12px;color:var(--color-text-secondary); }
+.bnav-btn { font-size:11px;font-weight:500;background:var(--color-text-primary);color:var(--color-background-primary);padding:5px 12px;border-radius:var(--border-radius-md);border:none;cursor:pointer; }
+
+.bsuper {
+  text-align:center; padding:28px 24px 0;
+  background: var(--color-background-primary);
+}
+.bsuper-eyebrow { font-size:11px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--color-text-secondary);margin-bottom:10px; }
+.bsuper-h { font-size:26px;font-weight:500;line-height:1.2;color:var(--color-text-primary);letter-spacing:-0.5px;font-family:var(--font-serif);margin-bottom:8px; }
+.bsuper-sub { font-size:13px;color:var(--color-text-secondary);max-width:440px;margin:0 auto 24px;line-height:1.6; }
+
+.split-container {
+  display: grid; grid-template-columns: 1fr 1fr;
+  background: var(--color-background-primary);
+  padding: 0 24px 24px; gap: 16px;
+}
+.split-col { border-radius: var(--border-radius-lg); overflow:hidden; border: 0.5px solid var(--color-border-tertiary); }
+.split-header {
+  padding: 10px 14px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  font-size: 12px; font-weight: 500;
+}
+.split-header.bad { background: var(--color-background-danger); color: var(--color-text-danger); }
+.split-header.good { background: var(--color-background-success); color: var(--color-text-success); }
+
+.split-items { padding: 12px; display:flex;flex-direction:column;gap:8px; }
+.split-item {
+  padding: 8px 10px; border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+}
+.split-item.bad-item { border-color: var(--color-border-danger); background: var(--color-background-danger); }
+.split-item.good-item { border-color: var(--color-border-success); background: var(--color-background-success); }
+.si-label { font-size: 11px; color: var(--color-text-secondary); }
+.si-val { font-size: 14px; font-weight: 500; }
+.si-val.bad { color: var(--color-text-danger); }
+.si-val.good { color: var(--color-text-success); }
+
+.video-b {
+  margin: 0 24px;
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg); overflow:hidden;
+  background: var(--color-background-primary);
+}
+.vb-top {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 16px; border-bottom:0.5px solid var(--color-border-tertiary);
+}
+.vb-title { font-size:12px;font-weight:500;color:var(--color-text-primary); }
+.vb-dur { font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono); }
+.vb-body { display:flex;align-items:center;gap:16px;padding:16px; }
+.vb-play { width:36px;height:36px;border-radius:50%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0; }
+.vb-arrow { width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--color-text-primary);margin-left:2px; }
+.vb-desc { font-size:12px;color:var(--color-text-secondary);line-height:1.6; }
+.vb-progress { height:3px;background:var(--color-background-secondary);margin:0 16px 16px;border-radius:2px;position:relative;overflow:hidden; }
+.vb-fill { height:100%;border-radius:2px;background:var(--color-text-info);width:0%;transition:width 0.1s linear; }
+
+.calc-section {
+  padding: 20px 24px;
+  background: var(--color-background-primary);
+  border-top: 0.5px solid var(--color-border-tertiary);
+  margin-top: 16px;
+}
+.calc-label { font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:14px; }
+.calc-tabs { display:flex;gap:0;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);overflow:hidden;margin-bottom:16px; }
+.calc-tab { flex:1;padding:7px;text-align:center;font-size:11px;font-weight:500;cursor:pointer;border:none;background:var(--color-background-secondary);color:var(--color-text-secondary);border-right:0.5px solid var(--color-border-tertiary); }
+.calc-tab:last-child{border-right:none;}
+.calc-tab.on { background:var(--color-background-primary);color:var(--color-text-primary); }
+
+.calc-slider-wrap { margin-bottom:16px; }
+.calc-slider-label { display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px; }
+.calc-slider-val { font-weight:500;color:var(--color-text-primary); }
+.calc-result { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px; }
+.calc-card { background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border:0.5px solid var(--color-border-tertiary); }
+.calc-card-n { font-size:18px;font-weight:500;color:var(--color-text-primary); }
+.calc-card-l { font-size:11px;color:var(--color-text-secondary);margin-top:2px; }
+
+.blabel { font-size:11px;color:var(--color-text-tertiary);text-align:center;padding:12px;border-top:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary); }
+</style>
+
+<div class="bwrap">
+  <div class="bconcept-label">Concept B — "The Contrast"</div>
+  <p style="font-size:13px;color:var(--color-text-secondary);margin-bottom:12px;line-height:1.6;">
+    Split hero — the broken old SOC on the left, Sentrixi's calm resolution on the right. Visitors <em>feel</em> the difference immediately. Video plays in a compact player mid-page. Below: an interactive ROI calculator that personalizes savings by audience and team size.
+  </p>
+
+  <div class="bhero">
+    <div class="bnav">
+      <div class="bnav-logo"><div class="bnav-sq"><div class="bnav-sq-in"></div></div>Sentrixi</div>
+      <div class="bnav-links"><span class="bnav-link">Platform</span><span class="bnav-link">About</span><span class="bnav-link">Contact</span></div>
+      <button class="bnav-btn">Book demo</button>
+    </div>
+
+    <div class="bsuper">
+      <div class="bsuper-eyebrow">The choice every security leader faces</div>
+      <div class="bsuper-h">Your SOC has two futures.</div>
+      <div class="bsuper-sub">One runs on humans at human speed. The other runs on 30 AI specialists at machine speed. The breach doesn't wait for the difference.</div>
+    </div>
+
+    <div class="split-container">
+      <div class="split-col">
+        <div class="split-header bad">Without Sentrixi</div>
+        <div class="split-items">
+          <div class="split-item bad-item"><div class="si-label">Mean time to detect</div><div class="si-val bad">21 days</div></div>
+          <div class="split-item bad-item"><div class="si-label">Mean time to respond</div><div class="si-val bad">77 days</div></div>
+          <div class="split-item bad-item"><div class="si-label">Analysts needed (24/7)</div><div class="si-val bad">12–18 FTEs</div></div>
+          <div class="split-item bad-item"><div class="si-label">Alert coverage</div><div class="si-val bad">&lt;5% investigated</div></div>
+          <div class="split-item bad-item"><div class="si-label">Annual SOC cost</div><div class="si-val bad">$3.2M+</div></div>
+        </div>
+      </div>
+      <div class="split-col">
+        <div class="split-header good">With Sentrixi</div>
+        <div class="split-items">
+          <div class="split-item good-item"><div class="si-label">Mean time to detect</div><div class="si-val good">&lt;500ms</div></div>
+          <div class="split-item good-item"><div class="si-label">Mean time to respond</div><div class="si-val good">&lt;2 seconds</div></div>
+          <div class="split-item good-item"><div class="si-label">Analysts needed (24/7)</div><div class="si-val good">2–4 FTEs (strategic)</div></div>
+          <div class="split-item good-item"><div class="si-label">Alert coverage</div><div class="si-val good">100% autonomous triage</div></div>
+          <div class="split-item good-item"><div class="si-label">Annual SOC cost</div><div class="si-val good">$890K avg.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="video-b" style="margin-bottom:16px;">
+      <div class="vb-top">
+        <div class="vb-title">Platform walkthrough — AI narrator, no slides</div>
+        <div class="vb-dur" id="bdur">0:00 / 1:00</div>
+      </div>
+      <div class="vb-body">
+        <div class="vb-play" onclick="togglePlay()"><div class="vb-arrow" id="bplay-icon"></div></div>
+        <div class="vb-desc">Watch an insider threat unfold and resolve — entirely autonomously. Real detections, real agents, real speed.</div>
+      </div>
+      <div class="vb-progress"><div class="vb-fill" id="bfill"></div></div>
+    </div>
+
+    <div class="calc-section">
+      <div class="calc-label">Calculate your savings</div>
+      <div class="calc-tabs">
+        <div class="calc-tab on" onclick="switchB('ciso',this)">CISO view</div>
+        <div class="calc-tab" onclick="switchB('ceo',this)">CEO / Board</div>
+        <div class="calc-tab" onclick="switchB('cfo',this)">CFO view</div>
+      </div>
+
+      <div id="bpanel-ciso">
+        <div class="calc-slider-wrap">
+          <div class="calc-slider-label">
+            <span>Current SOC analysts</span>
+            <span class="calc-slider-val" id="bval-analysts">12</span>
+          </div>
+          <input type="range" min="2" max="50" value="12" step="1" oninput="updateB()" id="bsl-analysts" style="width:100%"/>
+        </div>
+        <div class="calc-result" id="bres-ciso">
+          <div class="calc-card"><div class="calc-card-n" id="bsaved-hrs">10,400</div><div class="calc-card-l">Analyst hours saved / yr</div></div>
+          <div class="calc-card"><div class="calc-card-n" id="bcoverage">100%</div><div class="calc-card-l">Alert coverage</div></div>
+          <div class="calc-card"><div class="calc-card-n">487ms</div><div class="calc-card-l">Avg. response time</div></div>
+        </div>
+      </div>
+      <div id="bpanel-ceo" style="display:none">
+        <div class="calc-result">
+          <div class="calc-card"><div class="calc-card-n">0</div><div class="calc-card-l">Critical incidents missed in 18mo</div></div>
+          <div class="calc-card"><div class="calc-card-n">SOC 2</div><div class="calc-card-l">Continuously audit-ready</div></div>
+          <div class="calc-card"><div class="calc-card-n">99.97%</div><div class="calc-card-l">Uptime SLA</div></div>
+        </div>
+      </div>
+      <div id="bpanel-cfo" style="display:none">
+        <div class="calc-slider-wrap">
+          <div class="calc-slider-label">
+            <span>Current annual SOC cost ($K)</span>
+            <span class="calc-slider-val" id="bval-cost">3200</span>
+          </div>
+          <input type="range" min="500" max="10000" value="3200" step="100" oninput="updateCFO()" id="bsl-cost" style="width:100%"/>
+        </div>
+        <div class="calc-result">
+          <div class="calc-card"><div class="calc-card-n" id="bsavings">$2.31M</div><div class="calc-card-l">Annual savings</div></div>
+          <div class="calc-card"><div class="calc-card-n" id="broi">261%</div><div class="calc-card-l">3-year ROI</div></div>
+          <div class="calc-card"><div class="calc-card-n" id="bpayback">4.2mo</div><div class="calc-card-l">Payback period</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="blabel">Concept B · "The Contrast" — split hero, inline video player, personalized ROI calculator</div>
+  </div>
+</div>
+
+<script>
+let bPlaying = false, bProg = 0, bTimer = null;
+function togglePlay(){
+  bPlaying = !bPlaying;
+  const icon = document.getElementById('bplay-icon');
+  if(bPlaying){
+    icon.style.cssText='width:10px;height:12px;background:var(--color-text-primary);border-left:3px solid var(--color-background-primary);box-shadow:inset 3px 0 0 var(--color-background-primary);margin-left:0';
+    bTimer = setInterval(()=>{
+      bProg = Math.min(100, bProg+0.5);
+      document.getElementById('bfill').style.width = bProg+'%';
+      const secs = Math.round(bProg*0.6);
+      document.getElementById('bdur').textContent = '0:'+String(secs).padStart(2,'0')+' / 1:00';
+      if(bProg>=100){ clearInterval(bTimer); bPlaying=false; bProg=0; icon.style.cssText='width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--color-text-primary);margin-left:2px'; }
+    },100);
+  } else {
+    clearInterval(bTimer);
+    icon.style.cssText='width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid var(--color-text-primary);margin-left:2px';
+  }
+}
+
+function switchB(key,el){
+  document.querySelectorAll('.calc-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  ['ciso','ceo','cfo'].forEach(k=>{ const p=document.getElementById('bpanel-'+k); if(p) p.style.display='none'; });
+  document.getElementById('bpanel-'+key).style.display='block';
+}
+
+function updateB(){
+  const n = parseInt(document.getElementById('bsl-analysts').value);
+  document.getElementById('bval-analysts').textContent = n;
+  document.getElementById('bsaved-hrs').textContent = (n*800).toLocaleString();
+}
+
+function updateCFO(){
+  const cost = parseInt(document.getElementById('bsl-cost').value);
+  document.getElementById('bval-cost').textContent = cost.toLocaleString();
+  const sentrixi = 890;
+  const saved = Math.max(0, cost - sentrixi);
+  const roi = Math.round(((saved*3 - 890)/890)*100);
+  const payback = (890/Math.max(1,saved)*12).toFixed(1);
+  document.getElementById('bsavings').textContent = '$'+saved.toLocaleString()+'K';
+  document.getElementById('broi').textContent = roi+'%';
+  document.getElementById('bpayback').textContent = payback+'mo';
+}
+</script>

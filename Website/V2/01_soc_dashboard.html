@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AEGIS — Threat Detection Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c10;--bg2:#0f1218;--bg3:#141921;--bg4:#1a202c;
+  --card:#111827;--card2:#1a2234;--card3:#1e2a3a;
+  --border:#1e293b;--border2:#2d3a4f;
+  --white:#f1f5f9;--gray:#94a3b8;--muted:#64748b;--dim:#475569;
+  --blue:#3b82f6;--blue2:#60a5fa;--blue3:#93c5fd;--bluebg:rgba(59,130,246,.1);
+  --green:#22c55e;--greenbg:rgba(34,197,94,.1);--greentext:#4ade80;
+  --red:#ef4444;--redbg:rgba(239,68,68,.08);--redtext:#f87171;
+  --amber:#f59e0b;--amberbg:rgba(245,158,11,.08);--ambertext:#fbbf24;
+  --purple:#a78bfa;--purplebg:rgba(167,139,250,.08);
+  --cyan:#22d3ee;--cyanbg:rgba(34,211,238,.08);
+  --teal:#2dd4bf;--tealbg:rgba(45,212,191,.08);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--white);-webkit-font-smoothing:antialiased;min-height:100vh;padding:0}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.5rem;background:var(--bg2);border-bottom:1px solid var(--border)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.logo{font-weight:800;font-size:.95rem;letter-spacing:.08em}
+.logo span{color:var(--blue)}
+.breadcrumb{font-size:.75rem;color:var(--muted)}
+.breadcrumb span{color:var(--gray)}
+.topbar-right{display:flex;align-items:center;gap:1.25rem}
+.live-badge{display:flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:600;color:var(--greentext);padding:.3rem .7rem;border-radius:99px;background:var(--greenbg);border:1px solid rgba(34,197,94,.2)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.ts{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+
+/* LAYOUT */
+.page{padding:1.25rem 1.5rem}
+.page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.25rem}
+.page-title{font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+.page-sub{font-size:.75rem;color:var(--muted);margin-top:.15rem}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:.75rem;margin-bottom:1.25rem}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.blue::before{background:var(--blue)}
+.kpi.green::before{background:var(--green)}
+.kpi.red::before{background:var(--red)}
+.kpi.amber::before{background:var(--amber)}
+.kpi.purple::before{background:var(--purple)}
+.kpi-label{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.5rem}
+.kpi-value{font-family:'JetBrains Mono',monospace;font-size:1.7rem;font-weight:700;line-height:1}
+.kpi.blue .kpi-value{color:var(--blue2)}
+.kpi.green .kpi-value{color:var(--greentext)}
+.kpi.red .kpi-value{color:var(--redtext)}
+.kpi.amber .kpi-value{color:var(--ambertext)}
+.kpi.purple .kpi-value{color:var(--purple)}
+.kpi-detail{font-size:.7rem;color:var(--muted);margin-top:.35rem}
+.kpi-detail .up{color:var(--greentext)}
+.kpi-detail .down{color:var(--redtext)}
+
+/* GRID */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:.75rem}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card-header{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1rem;border-bottom:1px solid var(--border)}
+.card-title{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gray)}
+.card-badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:.2rem .5rem;border-radius:4px;font-weight:600}
+.card-body{padding:1rem}
+
+/* AGENT FLEET BARS */
+.fleet-row{display:flex;align-items:center;gap:.75rem;padding:.6rem 0;border-bottom:1px solid rgba(30,41,59,.5)}
+.fleet-row:last-child{border:none}
+.fleet-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fleet-name{font-size:.8rem;font-weight:500;width:100px;flex-shrink:0}
+.fleet-bar-wrap{flex:1;height:24px;background:var(--bg3);border-radius:4px;overflow:hidden;position:relative}
+.fleet-bar{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;color:rgba(255,255,255,.9);transition:width 1s ease}
+.fleet-meta{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--muted);width:120px;text-align:right;flex-shrink:0}
+
+/* THREAT QUEUE TABLE */
+.tq-table{width:100%;border-collapse:collapse}
+.tq-table th{font-size:.65rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--border)}
+.tq-table td{font-size:.8rem;padding:.65rem .75rem;border-bottom:1px solid rgba(30,41,59,.4);vertical-align:middle}
+.tq-table tr:hover{background:rgba(59,130,246,.03)}
+.severity{font-family:'JetBrains Mono',monospace;font-size:.65rem;font-weight:600;padding:.15rem .5rem;border-radius:3px;display:inline-block}
+.severity.critical{background:var(--redbg);color:var(--redtext);border:1px solid rgba(239,68,68,.2)}
+.severity.high{background:var(--amberbg);color:var(--ambertext);border:1px solid rgba(245,158,11,.2)}
+.confidence{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
+.agent-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:.15rem .4rem;border-radius:3px;background:var(--bg3);border:1px solid var(--border);color:var(--gray);margin:.1rem .15rem .1rem 0}
+.time-ago{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+
+/* DATA SOURCE HEALTH */
+.ds-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(30,41,59,.3)}
+.ds-row:last-child{border:none}
+.ds-left{display:flex;align-items:center;gap:.5rem;font-size:.8rem}
+.ds-dot{width:7px;height:7px;border-radius:50%}
+.ds-dot.ok{background:var(--green)}
+.ds-dot.warn{background:var(--amber)}
+.ds-latency{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted)}
+
+/* AI ENGINE */
+.ai-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem 0;border-bottom:1px solid rgba(30,41,59,.3)}
+.ai-row:last-child{border:none}
+.ai-label{font-size:.8rem;color:var(--gray)}
+.ai-val{font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:var(--white)}
+
+/* SPARKLINE CHART (CSS only) */
+.chart-area{height:120px;display:flex;align-items:flex-end;gap:2px;padding:.5rem 0}
+.chart-bar{flex:1;border-radius:2px 2px 0 0;min-height:3px;transition:height .3s}
+.chart-legend{display:flex;gap:1rem;justify-content:center;padding:.5rem 0;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:.3rem;font-size:.6rem;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logo">SENTRI<span>XI</span></div>
+    <div class="breadcrumb">AEGIS <span>›</span> Threat Detection Center</div>
+  </div>
+  <div class="topbar-right">
+    <div class="ts">April 22, 2026 14:32 UTC</div>
+    <div class="live-badge"><span class="live-dot"></span> Live</div>
+  </div>
+</div>
+
+<div class="page">
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi blue">
+      <div class="kpi-label">Events / Second</div>
+      <div class="kpi-value">12,847</div>
+      <div class="kpi-detail">across 10+ sources</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Mean Detection Latency</div>
+      <div class="kpi-value">47ms</div>
+      <div class="kpi-detail"><span class="up">↓ 12ms</span> vs last week</div>
+    </div>
+    <div class="kpi red">
+      <div class="kpi-label">Active Threats</div>
+      <div class="kpi-value">7</div>
+      <div class="kpi-detail">3 critical · 4 high</div>
+    </div>
+    <div class="kpi green">
+      <div class="kpi-label">Agent Fleet</div>
+      <div class="kpi-value">30/30</div>
+      <div class="kpi-detail">all operational</div>
+    </div>
+    <div class="kpi purple">
+      <div class="kpi-label">MTTR</div>
+      <div class="kpi-value">340ms</div>
+      <div class="kpi-detail"><span class="up">↓ 8%</span> vs Q1</div>
+    </div>
+  </div>
+
+  <!-- ROW: Fleet + Chart -->
+  <div class="grid-2">
+    <!-- AGENT FLEET -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Detection Agent Fleet — 30 agents across 6 domains</div>
+      </div>
+      <div class="card-body">
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--red)"></div>
+          <div class="fleet-name">Identity</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:60%;background:linear-gradient(90deg,#ef4444,#f87171)">5 agents</div></div>
+          <div class="fleet-meta">3,241 evt/min</div>
+        </div>
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--blue)"></div>
+          <div class="fleet-name">Endpoint</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:95%;background:linear-gradient(90deg,#3b82f6,#60a5fa)">6 agents</div></div>
+          <div class="fleet-meta">5,102 evt/min</div>
+        </div>
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--amber)"></div>
+          <div class="fleet-name">Network</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:53%;background:linear-gradient(90deg,#f59e0b,#fbbf24)">4 agents</div></div>
+          <div class="fleet-meta">2,890 evt/min</div>
+        </div>
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--purple)"></div>
+          <div class="fleet-name">Cloud</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:34%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)">5 agents</div></div>
+          <div class="fleet-meta">1,847 evt/min</div>
+        </div>
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--teal)"></div>
+          <div class="fleet-name">LOTL</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:18%;background:linear-gradient(90deg,#14b8a6,#2dd4bf)">4 agents</div></div>
+          <div class="fleet-meta">967 evt/min</div>
+        </div>
+        <div class="fleet-row">
+          <div class="fleet-dot" style="background:var(--cyan)"></div>
+          <div class="fleet-name">Application</div>
+          <div class="fleet-bar-wrap"><div class="fleet-bar" style="width:78%;background:linear-gradient(90deg,#06b6d4,#22d3ee)">6 agents</div></div>
+          <div class="fleet-meta">4,210 evt/min</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- THREAT VOLUME CHART -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Threat Detection Volume — 24H</div>
+        <div class="card-badge" style="background:var(--bluebg);color:var(--blue2)">18.2M events</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-area" id="chart"></div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Identity</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Endpoint</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Network</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Cloud</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--teal)"></div>LOTL</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Application</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREAT QUEUE -->
+  <div class="card" style="margin-bottom:.75rem">
+    <div class="card-header">
+      <div class="card-title">Active Threat Queue</div>
+      <div class="card-badge" style="background:var(--redbg);color:var(--redtext)">7 active</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="tq-table">
+        <thead>
+          <tr><th>Threat</th><th>Severity</th><th>Confidence</th><th>Agents Triggered</th><th>Detected</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:500">Credential stuffing — OAuth endpoint</td>
+            <td><span class="severity critical">Critical</span></td>
+            <td><span class="confidence" style="color:var(--redtext)">0.96</span></td>
+            <td><span class="agent-tag">Identity:brute-force</span><span class="agent-tag">Identity:MFA-anomaly</span><span class="agent-tag">Network:geo-impossible</span></td>
+            <td><span class="time-ago">3s ago</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:500">LOLBin chain → svchost.exe → certutil.exe</td>
+            <td><span class="severity critical">Critical</span></td>
+            <td><span class="confidence" style="color:var(--redtext)">0.93</span></td>
+            <td><span class="agent-tag">LOTL:LOLBin-chain</span><span class="agent-tag">Endpoint:proc-injection</span><span class="agent-tag">Network:C2-beacon</span></td>
+            <td><span class="time-ago">47s ago</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:500">Lateral movement — DVWS-PC01 → DVWS-DC02</td>
+            <td><span class="severity critical">Critical</span></td>
+            <td><span class="confidence" style="color:var(--redtext)">0.89</span></td>
+            <td><span class="agent-tag">LOTL:lateral-graph</span><span class="agent-tag">Identity:priv-escalation</span></td>
+            <td><span class="time-ago">2m ago</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:500">Anomalous AWS AssumeRole chain</td>
+            <td><span class="severity high">High</span></td>
+            <td><span class="confidence" style="color:var(--ambertext)">0.78</span></td>
+            <td><span class="agent-tag">Cloud:IAM-anomaly</span><span class="agent-tag">Cloud:secrets-access</span></td>
+            <td><span class="time-ago">5m ago</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:500">Encoded PowerShell execution — DVWS-WK14</td>
+            <td><span class="severity high">High</span></td>
+            <td><span class="confidence" style="color:var(--ambertext)">0.74</span></td>
+            <td><span class="agent-tag">Endpoint:script-block</span><span class="agent-tag">LOTL:LOTAIL</span></td>
+            <td><span class="time-ago">8m ago</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ROW: Data Sources + AI Engine -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Data Source Health</div>
+      </div>
+      <div class="card-body">
+        <div class="ds-row"><div class="ds-left"><div class="ds-dot ok"></div>Identity provider (Okta)</div><div class="ds-latency">47ms</div></div>
+        <div class="ds-row"><div class="ds-left"><div class="ds-dot ok"></div>EDR (CrowdStrike FDR)</div><div class="ds-latency">23ms</div></div>
+        <div class="ds-row"><div class="ds-left"><div class="ds-dot ok"></div>Cloud audit (CloudTrail)</div><div class="ds-latency">89ms</div></div>
+        <div class="ds-row"><div class="ds-left"><div class="ds-dot ok"></div>Network proxy (Zscaler)</div><div class="ds-latency">31ms</div></div>
+        <div class="ds-row"><div class="ds-left"><div class="ds-dot warn"></div>SIEM sync (Sentinel)</div><div class="ds-latency" style="color:var(--ambertext)">4.2s lag</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">AI Engine Performance</div>
+      </div>
+      <div class="card-body">
+        <div class="ai-row"><div class="ai-label">ML brain throughput</div><div class="ai-val">12,847 evt/s</div></div>
+        <div class="ai-row"><div class="ai-label">LLM escalation rate</div><div class="ai-val">2.1%</div></div>
+        <div class="ai-row"><div class="ai-label">Haiku triage (avg)</div><div class="ai-val">180ms</div></div>
+        <div class="ai-row"><div class="ai-label">Sonnet analysis (avg)</div><div class="ai-val">2.4s</div></div>
+        <div class="ai-row"><div class="ai-label">Opus deep investigation</div><div class="ai-val">8.1s</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Generate stacked bar chart
+const chart = document.getElementById('chart');
+const colors = ['#ef4444','#3b82f6','#f59e0b','#8b5cf6','#14b8a6','#06b6d4'];
+for (let i = 0; i < 48; i++) {
+  const bar = document.createElement('div');
+  bar.style.cssText = 'flex:1;display:flex;flex-direction:column-reverse;gap:1px;height:100%';
+  const heights = colors.map(() => Math.random() * 15 + 3);
+  const total = heights.reduce((a, b) => a + b, 0);
+  heights.forEach((h, j) => {
+    const seg = document.createElement('div');
+    const pct = (h / total) * (40 + Math.random() * 60);
+    seg.style.cssText = `height:${pct}%;background:${colors[j]};border-radius:1px;opacity:.85;min-height:2px`;
+    bar.appendChild(seg);
+  });
+  chart.appendChild(bar);
+}
+</script>
+</body>
+</html>
