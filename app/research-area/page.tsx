@@ -3,6 +3,7 @@ import Link from "next/link";
 import SnowflakeDemo from "@/components/research/SnowflakeDemo";
 import CinematicDemo from "@/components/research/CinematicDemo";
 import AttackReplay from "@/components/research/AttackReplay";
+import SOCDemo from "@/components/soc/SOCDemo";
 
 export const metadata: Metadata = {
   title: "Research Area | Sentrixi",
@@ -138,6 +139,21 @@ export default function ResearchArea() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Divider */}
+      <div style={{ borderTop: "1px solid rgba(0,210,255,0.06)", position: "relative", zIndex: 1 }} />
+
+      {/* SOC Dashboard */}
+      <section style={{ position: "relative", zIndex: 1, padding: "5rem 2rem" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          <SectionHeader
+            label="AEGIS SOC · LIVE DASHBOARD"
+            title="What your analysts see — when AEGIS is running."
+            sub="The full Security Operations Center view: live incident timeline, AI-classified alerts, behavioral telemetry, and the AEGIS AI Analyst explaining every decision in plain language."
+          />
+          <SOCDemo />
         </div>
       </section>
 
