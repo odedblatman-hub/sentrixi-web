@@ -40,4 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-.vercel
+# local claude code settings (permissions are machine-specific)
+.claude/settings.local.json
+
+# nested project copy and temp assets
+sentrixi-aegis/
+tmp/
