@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ContactButton from "@/components/ContactButton";
 import SnowflakeDemo from "@/components/research/SnowflakeDemo";
 import CinematicDemo from "@/components/research/CinematicDemo";
 import AttackReplay from "@/components/research/AttackReplay";
@@ -35,13 +36,25 @@ export default function ResearchArea() {
 
       {/* Nav */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 3rem", height: "64px", borderBottom: "1px solid rgba(0,210,255,0.08)", background: "rgba(4,8,15,0.85)", backdropFilter: "blur(12px)" }}>
-        <Link href="/" style={{ fontFamily: "var(--font-serif-display, 'DM Serif Display', serif)", fontSize: "1.4rem", letterSpacing: "0.08em", color: "#e8edf5", textDecoration: "none" }}>SENTRIXI</Link>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "0.55rem", textDecoration: "none" }}>
+          <svg width="18" height="24" viewBox="10 10 130 180" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <path d="M75,10 L140,35 L140,105 C140,145 110,175 75,190 C40,175 10,145 10,105 L10,35 Z" fill="rgba(0,229,160,0.12)" stroke="#00E5A0" strokeWidth="4"/>
+            <circle cx="75" cy="90" r="5.5" fill="#00E5A0" opacity="0.9"/>
+            <circle cx="75" cy="54" r="3.5" fill="#00E5A0" opacity="0.7"/>
+            <circle cx="43" cy="108" r="3.5" fill="#00E5A0" opacity="0.7"/>
+            <circle cx="107" cy="108" r="3.5" fill="#00E5A0" opacity="0.7"/>
+            <line x1="75" y1="90" x2="75" y2="54" stroke="#00E5A0" strokeWidth="1.5" opacity="0.5"/>
+            <line x1="75" y1="90" x2="43" y2="108" stroke="#00E5A0" strokeWidth="1.5" opacity="0.5"/>
+            <line x1="75" y1="90" x2="107" y2="108" stroke="#00E5A0" strokeWidth="1.5" opacity="0.5"/>
+          </svg>
+          <span style={{ fontFamily: "var(--font-serif-display, 'DM Serif Display', serif)", fontSize: "1.4rem", letterSpacing: "0.08em", color: "#e8edf5" }}>SENTRIXI</span>
+        </Link>
         <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
           <Link href="/shield" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SHIELD</Link>
           <Link href="/sentinel" style={{ color: "#7eb8d4", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>SENTINEL</Link>
           <Link href="/investors" style={{ color: "#a78bfa", textDecoration: "none", fontSize: "0.85rem", letterSpacing: "0.06em" }}>INVESTORS</Link>
           <span style={{ color: TEAL, fontSize: "0.85rem", letterSpacing: "0.06em", borderBottom: `1px solid ${TEAL}`, paddingBottom: "1px" }}>RESEARCH AREA</span>
-          <a href="mailto:register@sentrixi.com" style={{ padding: "0.4rem 1.2rem", border: "1px solid rgba(0,210,255,0.4)", borderRadius: "4px", color: ACCENT, textDecoration: "none", fontSize: "0.78rem", letterSpacing: "0.08em" }}>CONTACT</a>
+          <ContactButton style={{ padding: "0.4rem 1.2rem", border: "1px solid rgba(0,210,255,0.4)", borderRadius: "4px", color: ACCENT, fontSize: "0.78rem", letterSpacing: "0.08em" }} />
         </div>
       </nav>
 

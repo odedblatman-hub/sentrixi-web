@@ -43,7 +43,7 @@ export const metadata: Metadata = {
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID ?? "";
 
 // Bump this manually on each deploy so the version is always visible on the live site
-export const SITE_VERSION = "v2.4 — Hybrid Demo (cinematic → SOC → compare)";
+export const SITE_VERSION = "v2.5 — AEGIS logo + Contact modal";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
