@@ -41,11 +41,21 @@ export const metadata: Metadata = {
 
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID ?? "";
 
+// Bump this manually on each deploy so the version is always visible on the live site
+export const SITE_VERSION = "v2.0 — Research Area";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${dmSerif.variable} ${ibmPlex.variable}`}>
       <body style={{ margin: 0, padding: 0, background: "#04080f" }}>
         {children}
+        <div style={{
+          position: "fixed", bottom: "12px", right: "14px", zIndex: 9999,
+          fontSize: "10px", fontFamily: "monospace", letterSpacing: "0.05em",
+          color: "rgba(255,255,255,0.18)", pointerEvents: "none", userSelect: "none",
+        }}>
+          {SITE_VERSION}
+        </div>
         {GA4_ID && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} strategy="afterInteractive" />
